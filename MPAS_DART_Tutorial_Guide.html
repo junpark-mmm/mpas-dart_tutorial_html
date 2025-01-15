@@ -1,0 +1,1749 @@
+<!doctype html>
+
+<!-- Copyright (c) 2024, the University Corporation for Atmospheric Research (UCAR). -->
+
+<html>
+    
+<head> 
+
+<style>
+    h1 {font-family:Verdana,Geneva,sans-serif;}
+    h2 {font-family:Verdana,Geneva,sans-serif;}
+    h3 {font-family:Verdana,Geneva,sans-serif;}
+    h4 {font-family:Verdana,Geneva,sans-serif;}
+    li {font-family:Verdana,Geneva,sans-serif;}
+    b {font-family:Verdana,Geneva,sans-serif;}
+    p.top {max-width:875px; font-family:Verdana,Geneva,sans-serif;}
+    p {max-width:98%; font-family:Verdana,Geneva,sans-serif;}
+    div.header {background-color:lightgray; max-width:900px; margin-top:30px; margin-bottom:10px; cursor:pointer;}
+    div.subheader {background-color:lightgray; max-width:870px; margin-top:30px; margin-bottom:10px; cursor:pointer;}
+    div.hintheader {background-color:lightblue; max-width:840px; margin-top:30px; margin-bottom:10px; cursor:pointer;}
+    div.section {max-width:900px; display:none; margin-left:30px;}
+    div.subsection {max-width:900px; display:none; margin-left:30px;}
+    div.hint {max-width:900px; display:none; margin-left:30px;}
+    div.outlined {max-width:870px; padding-left:15px; padding-right:15px; border-style:solid; border-width:thin; border-color:red;}
+    pre.terminal {font-family:"Courier New",Courier,monospace; font-weight:bold; margin-left:15px;}
+    em.terminal {font-family:"Courier New",Courier,monospace; font-weight:bold; font-style:normal;}
+    em.highlight {background-color: yellow; font-style:normal;}
+    em.prompt {user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; font-style:normal;}
+    b.red {font-family:"Courier New",Courier,monospace; font-weight:bold; color:#ff0000;}
+</style>
+
+<title>MPAS/DART Guide</title>
+
+<script type="text/javascript">
+function show(id)
+{
+    var e = document.getElementById(id);
+
+    if (e.style.display == "block") {
+        e.style.display = "none";
+    }
+    else {
+        e.style.display = "block";
+    }
+}
+
+function jump(sectionid='')
+{
+    if (sectionid == '') {
+        var params = new URLSearchParams(window.location.search);
+        if (params.has('section')) {
+            sectionid = params.get('section');
+        }
+    }
+
+    if (sectionid == '') {
+        return;
+    }
+
+    var section = document.getElementById(sectionid);
+
+    while (section != null && section.id != '') {
+        show(section.id);
+        section = section.parentNode;
+    }
+    document.getElementById(sectionid+'-header').scrollIntoView({behavior: 'smooth'});
+}
+</script>
+
+</head>
+
+<body onLoad="jump()">
+
+<img src="Logo_MPAS.png">
+<img src="Dartboard7.png" style="height:60px; width:180px">
+
+<h1>Welcome to the MPAS/DART Guide</h1>
+
+<p class="top">
+This web page is intended to help a new user set up the
+DART data assimilation system with the 
+<a href="https://ncar.ucar.edu/what-we-offer/models/model-prediction-across-scales-mpas">
+Model for Prediction Across Scales (MPAS)</a>.
+The details of the steps in each section can be viewed by clicking on the headers.
+For the description of the system, go to the overview in Section 3.
+</p>
+
+<!--
+<p class="top">
+DO WE HAVE SOME MPAS RESTART FILES THAT WE CAN TELL USERS TO DOWNLOAD?  SOMETHING SMALL, AND REGIONAL MAYBE?
+<br><br>
+In order to work through these exercises on your own computer, you will need to <a href="input_data/mpas_tutorial.tar.gz">
+download the tar file with all input files</a>. Note that the download is about 3.2 GB, and unpacking the .tar.gz file
+will require about 21.5 GB of space.
+<br>
+<b>After unpacking the input files, you will need to set the environment variable <em class="terminal">$MPAS_TUTORIAL</em>
+to the absolute path of the resulting <em class="terminal">mpas_tutorial</em> directory.</b>
+</p>
+-->
+
+<p class="top">
+While going through this guide you may find it helpful to have a copy of the DART On-line
+documentation open in another window.
+Click <a href="https://docs.dart.ucar.edu/en/latest/" target="_blank">here</a> to open the DART Documentation
+in a new window.
+<br><br>
+
+You may also find it helpful to have the
+MPAS-Atmosphere Users' Guide available in another window as well.
+Click <a href="http://www2.mmm.ucar.edu/projects/mpas/mpas_atmosphere_users_guide_8.0.pdf" target="_blank">here</a> 
+to open the MPAS Users' Guide (for Version 8.0) in a new window.
+</p>
+
+<!--
+<p class="top">
+ARE WE SUGGESTING PEOPLE RUN THIS ON THEIR OWN MACHINES OR ON DERECHO ONLY?
+WHAT MACHINE IS SOYOUNG'S TUTORIAL RUNNING ON?
+<br><br>
+</p>
+-->
+
+
+<!-- ============================================================================== -->
+<!-- ============================================================================== -->
+<div class="header" onClick="show('prerequisites')">
+<h2 id="prerequisites-header">0. Prerequisites</h2>
+</div>
+
+<div id="prerequisites" class="section">
+<p>
+DART is tailored to work with the unchanged MPAS Atmosphere model, so before starting to 
+install and run DART you should follow the steps to download and run MPAS-A first.
+Once that is complete, then the next step is to download DART and build it.
+Information about installing and running MPAS-A can be found at 
+<a href="https://www2.mmm.ucar.edu/projects/mpas/tutorial/v8.0/index.html" target="_blank">
+https://www2.mmm.ucar.edu/projects/mpas/tutorial/v8.0/index.html</a>.
+<p>
+DART requires the NetCDF libraries, an MPI-2 implementation, and access to
+Matlab to run the diagnostic routines.  The scripting is mostly in C-Shell with some
+Bash.
+<p>
+If you have access to the NSF NCAR <a href="https://arc.ucar.edu/knowledge_base/74317833" target="_blank">derecho</a> 
+HPC system, DART will run there with the addition of loading the HDF module (see below for more details.)
+</p>
+</div>
+
+<!-- ============================================================================== --->
+<!-- ============================================================================== --->
+<div class="header" onClick="show('obtaining_building')">
+<h2>1. Downloading DART, and compiling a simple model for the first time.</h2>
+</div>
+
+<div id="obtaining_building" class="section">
+<p>
+DART is a community facility which includes a collection of tools and utilities 
+for Data Assimilation.  It is distributed as source code because there are many 
+options and customizations which need to be selected at compile time.
+
+The instructions in this section will explain how to obtain a copy of
+the DART source code directly from the DART GitHub repository.  
+
+We'll then compile the executables associated with the Lorenz 1996 model (<em class="terminal">lorenz_96</em>)
+and run some simple tests to verify things are working.  Then we'll do the same with the 
+MPAS Atmospheric model (<em class="terminal">mpas_atm</em>). 
+</p>
+
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('downloading')">
+<h3>1.1 Obtaining the DART code</h3>
+</div>
+
+<div id="downloading" class="subsection">
+
+<p>
+The DART code is distributed directly from the GitHub
+repository where it is developed. While it's possible to navigate to
+<a href="https://github.com/NCAR/DART" target="_blank">https://github.com/NCAR/DART</a>
+and obtain the code by clicking on the "Code" -> "Download ZIP" option, it's better to <i>clone</i>
+the repository directly on the command-line.
+</p>
+
+<p>
+<b>
+Normally the main DART repository should be used when starting a data assimilation project.
+But for this tutorial only, there is updated code for Regional MPAS and Radar obs support which
+is not yet in the main DART repository. The following command should be used to download
+the DART code from a different repository.  
+</b>
+</p>
+
+<p>
+From within your <em class="terminal">${HOME}</em> directory run:
+</p>
+
+<pre class="terminal">
+$ git clone https://whatever your own repo is syha...   DART
+$ git checkout name_of_right_branch
+</pre>
+
+<p>
+For other uses, the main DART repo code can be downloaded with this command:
+</p>
+
+<pre class="terminal">
+$ git clone https://github.com/NCAR/DART.git  DART
+</pre>
+
+<p>
+Cloning the DART repository may take several minutes and at the end of the process
+the output to the terminal should look something like the following:
+</p>
+
+<pre class="terminal">
+Cloning into 'DART'...
+remote: Enumerating objects: 109322, done.
+remote: Counting objects: 100% (1659/1659), done.
+remote: Compressing objects: 100% (754/754), done.
+remote: Total 109322 (delta 974), reused 1498 (delta 897), pack-reused 107663
+Receiving objects: 100% (109322/109322), 634.19 MiB | 2.55 MiB/s, done.
+Resolving deltas: 100% (80536/80536), done.
+Updating files: 100% (3403/3403), done.
+</pre>
+
+<p>
+We should now have an <em class="terminal">DART</em> directory:
+</p>
+
+<pre class="terminal">
+$ ls -l DART
+total 224
+-rw-r--r--   1 user  staff  62453 Oct 19  2023 CHANGELOG.rst
+-rw-r--r--   1 user  staff  11377 Oct 19  2023 LICENSE
+-rw-r--r--   1 user  staff   2069 Oct 19  2023 README.md
+drwxr-xr-x   6 user  staff    192 Oct 19  2023 assimilation_code
+drwxr-xr-x  24 user  staff    768 Oct 24  2023 build_templates
+-rw-r--r--   1 user  staff   3226 Oct 19  2023 conf.py
+-rw-r--r--   1 user  staff    613 Oct 19  2023 copyright.rst
+drwxr-xr-x  14 user  staff    448 Oct 19  2023 developer_tests
+drwxr-xr-x   3 user  staff     96 Oct 19  2023 diagnostics
+drwxr-xr-x  83 user  staff   2656 Oct 19  2023 guide
+-rw-r--r--   1 user  staff  21017 Oct 19  2023 index.rst
+drwxr-xr-x  52 user  staff   1664 Oct 19  2023 models
+drwxr-xr-x   4 user  staff    128 Oct 19  2023 observations
+drwxr-xr-x   4 user  staff    128 Oct 19  2023 theory
+</pre>
+
+<p>
+That's it! We now have a copy of the latest release of the DART source code.
+</p>
+
+</div>
+
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('building')">
+<h3>1.2 Environment setup</h3>
+</div>
+
+<div id="building" class="subsection">
+
+<p>
+DART includes compiler and machine-specific makefiles for many common platforms.
+
+<pre class="terminal">
+$ cd DART/build_templates
+$ ls -l
+
+</pre>
+
+<p>
+Look for the <em class="terminal">mkmf.tempate.xxx</em> or <em class="terminal">mkmf.template.xxx.xxx</em> 
+which is closest to your compiler and platform.  Link or copy it into a file 
+named <em class="terminal">mkmf.template</em>, e.g.:
+</p>
+<pre class="terminal">
+$ cp mkmf.template.gfortran mkmf.template
+$
+</pre>
+
+<p>
+Before beginning the compilation process, it's worth verifying that we have the
+MPI compiler wrappers in our path, and that the environment variable pointing to
+the netCDF libraries are set:
+</p>
+
+<pre class="terminal">
+$ which mpif90
+/usr/local/cmpwrappers/mpif90
+
+$ echo $NETCDF
+/usr/local/netcdf-4.7.0-gcc
+
+</pre>
+
+<p>
+If you are running on the NSF NCAR <i>derecho</i> computer, you may need to
+add the HDF module to your environment before building:
+</p>
+
+<pre class="terminal">
+$ module load hdf
+
+</pre>
+
+<p>
+If you want to compile in a single precision (r4), 
+edit DART/assimilation_code/modules/utilities/types_mod.f90, as below.
+
+<pre class="terminal">
+!integer, parameter :: r8 = SELECTED_REAL_KIND(12)   ! 8 byte reals
+integer, parameter :: r8 = r4                      ! alias r8 to r4
+
+</pre>
+<p>
+Without this change, the default compilation will use double precision (r8).
+
+<p>
+</div>
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('lorenz96')">
+<h3>1.3 Compiling and Running an Idealized Case of the Lorenz 96 model</h3>
+</div>
+
+<div id="lorenz96" class="subsection">
+<p>
+This section is neither mandatory nor prerequsite for MPAS/DART runs.
+But if you want to compile and run a simple test of the Lorenz 96 model first to ensure 
+the compile and the environment is correct, go to the Lorenz 96 model directory:
+
+<pre class="terminal">
+$ cd DART/models/lorenz_96/work
+
+</pre>
+
+<p>
+We'll begin by compiling all the executables associated with running
+the Lorenz 96 model by running a script:
+
+<pre class="terminal">
+$ ./quickbuild.sh
+
+</pre>
+
+<p>
+When the script finishes, you should have several executables in
+the current directory, including <em class="terminal">filter</em>
+which is the main data assimilation executable.
+</p>
+
+<pre class="terminal">
+$ ls
+closest_member_tool	  input.nml	      perfect_input.cdl
+create_fixed_network_seq  input.workshop.nml  perfect_input.nc
+create_obs_sequence	  integrate_model     perfect_model_obs
+dart_log.nml		  Makefile	      perfect_output.nc
+dart_log.out		  model_mod_check     pmo_input_member_0001.nc
+fill_inflation_restart	  obs_common_subset   preprocess
+filter			  obs_diag	      quickbuild.sh
+filter_input.cdl	  obs_seq.in	      true_state.nc
+filter_input_list.txt	  obs_seq.in.power    workshop_setup.sh
+filter_input.nc		  obs_seq.out
+filter_output_list.txt	  obs_sequence_tool
+
+</pre>
+
+<p>
+DART can generate artificial observation values based on a single 'true' state, with
+added noise to mimic real-life observations.  The executable <em class="terminal">perfect_model_obs</em>
+is used to do that.  Run it from the command line.  It will create a file
+called <em class="terminal">obs_seq.out</em> which will be used by the assimilation.
+</p>
+
+<pre class="terminal">
+$ ./perfect_model_obs
+
+</pre>
+
+<p>
+The main assimilation program is <em class="terminal">filter</em>.  It will assimilate
+the synthetic observations and advance the Lorenz 96 model. Run it from the command line.
+It will create a file called <em class="terminal">obs_seq.final</em> and a file
+called <em class="terminal">filter_output.nc</em>.  For a small model all the ensemble
+member data are in a single NetCDF file.  For a large model like MPAS, each ensemble
+member's data will be in an individual NetCDF file.
+</p>
+
+<pre class="terminal">
+$ ./filter
+
+</pre>
+
+<p>
+The programs should run to completion without error.  If so, you are ready to
+move on to compiling and running the MPAS/DART version of the programs.
+</p>
+
+</div>
+</div>
+</div>
+
+<!-- ============================================================================== --->
+<!-- ============================================================================== --->
+<div class="header" onClick="show('building-mpasdart')">
+<h2>2. Compiling the MPAS/DART programs</h2>
+</div>
+
+<div id="building-mpasdart" class="section">
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('layout')">
+<h3>2.1 Code Layout</h3>
+</div>
+
+<div id="layout" class="subsection">
+
+<p>
+Within the DART mpas_atm directory, code is laid out as follows.
+<pre class="terminal">
+DART/models/mpas_atm
+             ├── data: sample data and templates for MPAS and filter runs
+             ├── shell_scripts: shell scripts for cycling experiments
+             ├── tutorial: Hands-on tutorial with sample data
+             ├── matlab: matlab scripts for simple diagnostics
+             └── work: a place to build all MPAS/DART executables
+</pre>
+
+<p>
+The 'data' directory contains small example MPAS files, namelist, and
+I/O stream files for an MPAS run.  
+</p>
+
+<p>
+The 'shell_scripts' directory contains a collection of scripts that 
+support the workflow for cycling.  The ensemble of the MPAS model has 
+to run to advance the time, then 'filter' runs to do data assimilation 
+on the ensemble of MPAS restart files, then the ensemble of MPAS models 
+advances again, then 'filter' runs, in a cycle.
+</p>
+</div>
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('mpasdart')">
+<h3>2.2 Compiling MPAS/DART </h3>
+</div>
+
+<div id="mpasdart" class="subsection">
+
+<p>
+Now let's build and run with the MPAS Atmosphere model.
+</p>
+
+<p>
+Go to the MPAS Atmospheric model directory:
+
+<pre class="terminal">
+$ cd models/mpas_atm/work
+
+</pre>
+
+<p>
+We'll begin by compiling all the executables associated with running
+MPAS/DART by running a script:
+
+<pre class="terminal">
+$ ./quickbuild.sh
+
+</pre>
+
+<p>
+When the script finishes, you should have several executables in
+the current directory, including <em class="terminal">filter</em>
+which is the main data assimilation executable.
+</p>
+
+<pre class="terminal">
+$ ls
+advance_time		  model_mod_check	    obs_seq_verify
+closest_member_tool	  mpas_dart_obs_preprocess  perfect_model_obs
+create_fixed_network_seq  obs_common_subset	    perturb_single_instance
+create_obs_sequence	  obs_diag		    preprocess
+dart_log.nml		  obs_selection		    quickbuild.sh
+dart_log.out		  obs_seq.1800obs	    update_bc
+fill_inflation_restart	  obs_seq.1obs		    update_mpas_states
+filter			  obs_seq_coverage	    wakeup_filter
+input.nml		  obs_seq_to_netcdf
+Makefile		  obs_sequence_tool
+
+</pre>
+
+<p>
+In the executables produced above, MPAS-specific programs are 
+<em class="terminal">mpas_dart_obs_preprocess</em>,
+<em class="terminal">update_mpas_states</em>, and
+<em class="terminal">update_bc</em>. And  
+<em class="terminal">model_mod_check</em> can be used for a simple test of
+the spatial interpolation over the MPAS unstructured mesh through the genric
+testing capability implemented in <em class="terminal">filter</em>.
+
+The next sections will explain the overall workflow, how to create
+observations for your experiments, what namelist settings are needed,
+and which executables to use.
+</div>
+
+
+</div>
+
+
+<!-- ============================================================================== --->
+<!-- ============================================================================== --->
+<div class="header" onClick="show('overview')">
+<h2>3. Overview of the MPAS/DART system </h2>
+</div>
+
+<div id="overview" class="section">
+<p>
+The DART has an interface for the atmospheric component of the <a href="https://mpas-dev.github.io/">MPAS</a> 
+model, which is a fully compressible nonhydrostatic atmospheric model using a
+height-based terrain-following vertical coordinate and centroidal Voronoi meshes for
+horizontal discretization, formally Spherical Centriodal Voronoi Tesselations (SCVTs).
+</p>
+
+<p>
+This allows for either <b>quasi-uniform</b> or <b>variable-resolution meshes</b> with 
+(potentially multiple) local refinements.
+The MPAS/DART interface was built on the SCVT-dual mesh (with the generic barycentric interpolation) to 
+facilitate a seamless framework for multi- and cross-scale ensemble analysis. 
+</p>
+
+<p>
+Because the interface employs the model's <b>native coordinates both horizontally and vertically</b>, 
+there is no need for horizontal regridding to regular lat/lon grids or the vertical coordinate transformation
+(from height to pressure, for instance) for data assimilation.
+</p>
+
+<p>
+Since MPAS V7.0, regional or limited-area simulations are also supported with
+a single namelist parameter change (e.g., config_apply_lbcs = true in namelist.atmosphere)
+and lateral boundary conditions (lbc) provided as specified in streams.atmosphere.
+And the MPAS/DART interface <b>fully supports both global and regional configurations.</b> <br>
+<br>
+Due to the model updates and our recent updates for radar DA, we recommend to use MPAS V8+ for regional cycling.
+</p>
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('analysis')">
+<h3>3.1 Analysis variables</h3>
+</div>
+
+<div id="analysis" class="subsection">
+
+<p>
+By default, all the analysis variables in the state vector, except for horizontal winds, are 
+the same as the model's prognostic variables - potential temperature (theta), dry density (rho), 
+and hydrometeors like water vapor mixing rato (qv) - leading to no variable transformation between analysis and forecast, 
+and therby avoiding corresponding analysis errors.<br>
+<br>
+As for the horizontal winds, the MPAS model only predicts wind speed normal to the edges in the unstructured 
+mesh (called edge_wind "u") while observations are reported as either zonal or meridional wind components.
+Therefore, by default, the corresponding model diagnostic variables - uReconstructZonal and uReconstructMeridional, 
+respectively - defined at cell centers are used in the state vector to compute innovations (o-f). <br>
+Their analysis increments at cell centers are then projected back to the edges to update the edge_wind incrementally.
+<br><br>
+The analysis variables are defined in <em class="terminal">mpas_state_variables</em> under 
+<em class="terminal">&mpas_vars_nml</em> in input.nml. 
+</p>
+<p>
+Namelists start with an ampersand '&amp;' and terminate with a slash '/'. 
+Character strings that contain a '/' must be enclosed in quotes to prevent
+them from prematurely terminating the namelist.
+</p>
+
+<pre class="terminal">
+   &mpas_vars_nml
+      mpas_state_variables = 'theta',                 'QTY_POTENTIAL_TEMPERATURE',
+                             'rho',                   'QTY_DENSITY',
+                             'uReconstructZonal',     'QTY_U_WIND_COMPONENT',
+                             'uReconstructMeridional','QTY_V_WIND_COMPONENT',
+                             'qv',                    'QTY_VAPOR_MIXING_RATIO',
+                             'qc',                    'QTY_CLOUDWATER_MIXING_RATIO',
+                             'surface_pressure',      'QTY_SURFACE_PRESSURE'
+      mpas_state_bounds    = 'qv','0.0','NULL','CLAMP',
+                             'qc','0.0','NULL','CLAMP',
+   /
+
++--------------------+---------------------------------------+---------------------------------------------+
+| Item               | Type                                  | Description                                 |
++====================+=======================================+=============================================+
+| mpas_vars_nml      | character(len=NF90_MAX_NAME)::        | The table that both specifies which         |
+|                    | dimension(160)                        | MPAS variables will be placed in the        |
+|                    |                                       | state vector, and also relates those        |
+|                    |                                       | variables to the corresponding DART kinds.  |
+|                    |                                       | The first column in each pair must be the   |
+|                    |                                       | exact NetCDF name of a field in the MPAS    |
+|                    |                                       | file. The second column in each pair must   |
+|                    |                                       | be a KIND known to the DART system. See     |
+|                    |                                       | the <em class="terminal">obs_kind_mod.f90</em> file within            |
+|                    |                                       | <em class="terminal">assimilation_code/modules/observations/</em>     |
+|                    |                                       | for known names. This file is autogenerated |
+|                    |                                       | when DART builds filter for a particular    |
+|                    |                                       | model, so run <em class="terminal">quickbuild.sh</em> in the          |
+|                    |                                       | work directory first before examining this  |
+|                    |                                       | file. Use the generic kind list in the      |
+|                    |                                       | <em class="terminal">obs_kind_mod</em> tables, not the specific       |
+|                    |                                       | type list.                                  |
++--------------------+---------------------------------------+---------------------------------------------+
+| mpas_state_bounds  | character(len=NF90_MAX_NAME)::        | List only MPAS variables that must          |
+|                    | dimension(160)                        | restrict their values to remain between     |
+|                    |                                       | given lower and/or upper bounds.            |
+|                    |                                       | Columns are: NetCDF variable name, min      |
+|                    |                                       | value, max value, and action to take for    |
+|                    |                                       | out-of-range values. Either min or max can  |
+|                    |                                       | have the string 'NULL' to indicate no       |
+|                    |                                       | limiting will be done. If the action is     |
+|                    |                                       | 'CLAMP' out of range values will be changed |
+|                    |                                       | to the corresponding bound and execution    |
+|                    |                                       | continues; 'FAIL' stops the executable if   |
+|                    |                                       | out of range values are detected.           |
++--------------------+---------------------------------------+---------------------------------------------+
+
+</pre>
+
+<p>
+The <em class="terminal">&amp;mpas_vars_nml</em> namelist within 
+<em class="terminal">input.nml</em> contains the list of MPAS
+variables that make up the DART state vector.  These
+variables are directly updated by the filter assimilation.
+</p>
+
+<p>
+There is a new DART filter type, <em class="terminal">QCEFF</em>, which is designed to work with
+non-gaussian distributions and bounded quantities.  In the long run this
+will most likely be a better solution to bounded quantities being moved
+out of range during the assimilation.  This is a newly available feature
+and will be tested with MPAS soon.
+</p>
+
+<p>
+Until then, the best solution is to detect and change out of range values
+after assimilation.
+Any variables whose values cannot exceed a given minimum or maximum can be
+listed in <em class="terminal">mpas_state_bounds</em>. When the data is written back into the MPAS
+NetCDF files values outside the allowed range will be detected and changed. Data
+inside the DART state vector and data written to the DART diagnostic files will
+not go through this test and values may exceed the allowed limits. Note that
+changing values at the edges of the distribution means it is no longer
+completely gaussian. In practice this technique has worked effectively, but if
+the assimilation is continually trying to move the values outside the permitted
+range the results may be of poor quality. Examine the diagnostics for these
+fields carefully when using bounds to restrict their values.
+
+
+</pre>
+
+</div>
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('filter')">
+<h3>3.2 Data assimilation options</h3>
+</div>
+
+<div id="filter" class="subsection">
+
+<p>
+The main ensemble data assimilation executable is <em class="terminal">filter</em>.
+It takes an ensemble of model states and a set of observations, assimilates each one,
+and writes out updated model states.  It is an MPI enabled program since it must
+have the entire ensemble of model states available in memory to operate and usually
+runs with many MPI instances.
+</p>
+
+<p>
+The DART-related namelists are always read from a file named <em class="terminal">input.nml</em>.
+</p>
+
+<p>
+For an MPAS-DART run, the namelist &amp;model_nml controls the MPAS-specific settings, along with
+&amp;mpas_vars_nml described in the previous section 3.1.
+</p>
+
+
+<pre class="terminal">
+
+   &model_nml
+      init_template_filename       = 'mpas_init.nc',
+      vert_localization_coord      = 3,
+      assimilation_period_days     = 0,
+      assimilation_period_seconds  = 21600,
+      model_perturbation_amplitude = 0.0001,
+      log_p_vert_interp            = .true.,
+      calendar                     = 'Gregorian',
+      use_u_for_wind               = .false.,
+      use_rbf_option               = 2,
+      update_u_from_reconstruct    = .true.,
+      use_increments_for_u_update  = .true.,
+      highest_obs_pressure_mb      = 100.0,
+      sfc_elev_max_diff            = -1.0,
+      outside_grid_level_tolerance = -1.0,
+      extrapolate                  = .false.,
+      debug                        = 0,
+   /
+
++------------------------------+--------------------------------+-----------------------------------------+
+| Item                         | Type                           | Description                             |
++==============================+================================+=========================================+
+| init_template_filename       | character(len=256)             | The name of the MPAS analysis file to   |
+|                              | <i>[default: 'mpas_init.nc']</i>      | be read and/or written by the DART      |
+|                              |                                | programs for the mesh info.             |
+|                              |                                | No time-variant fields are read.        |
++------------------------------+--------------------------------+-----------------------------------------+
+| highest_obs_pressure_mb      | real(r8)                       | Observations higher than this           |
+|                              | <i>[default: 100.0]</i>               | pressure are ignored. Set to -1.0 to    |
+|                              |                                | ignore this test. For models with a     |
+|                              |                                | prescribed top boundary layer, trying   |
+|                              |                                | to assimilate very high observations    |
+|                              |                                | results in problems because the model   |
+|                              |                                | damps out any changes the               |
+|                              |                                | assimilation tries to make. With        |
+|                              |                                | adaptive algorithms this results in     |
+|                              |                                | larger and larger coefficients as the   |
+|                              |                                | assimilation tries to effect state      |
+|                              |                                | vector change.                          |
++------------------------------+--------------------------------+-----------------------------------------+
+| assimilation_period_days     | integer <i>[default: 0]</i>           | The number of days to advance the       |
+|                              |                                | model for each assimilation. Even if    |
+|                              |                                | the model is being advanced outside     |
+|                              |                                | of the DART filter program, the         |
+|                              |                                | assimilation period should be set       |
+|                              |                                | correctly. Only observations with a     |
+|                              |                                | time within +/- 1/2 this window size    |
+|                              |                                | will be assimilated.                    |
++------------------------------+--------------------------------+-----------------------------------------+
+| assimilation_period_seconds  | integer <i>[default: 21600]</i>       | In addition to                          |
+|                              |                                | <em class="terminal">assimilation_period_days</em>, the           |
+|                              |                                | number of seconds to advance the        |
+|                              |                                | model for each assimilation.            |
++------------------------------+--------------------------------+-----------------------------------------+
+| vert_localization_coord      | integer <i>[default: 3]</i>           | Vertical coordinate for vertical        |
+|                              |                                | localization.                           |
+|                              |                                |                                         |
+|                              |                                | -  1 = model level                      |
+|                              |                                | -  2 = pressure (in pascals)            |
+|                              |                                | -  3 = height (in meters)               |
+|                              |                                | -  4 = scale height (unitless)          |
++------------------------------+--------------------------------+-----------------------------------------+
+| sfc_elev_max_diff            | real(r8)\ <i>[default: -1.0]</i>      | If > 0, the maximum difference, in      |
+|                              |                                | meters, between an observation marked   |
+|                              |                                | as a 'surface obs' as the vertical      |
+|                              |                                | type (with the surface elevation, in    |
+|                              |                                | meters, as the numerical vertical       |
+|                              |                                | location), and the surface elevation    |
+|                              |                                | as defined by the model. Observations   |
+|                              |                                | further away from the surface than      |
+|                              |                                | this threshold are rejected and not     |
+|                              |                                | assimilated. If the value is            |
+|                              |                                | negative, this test is skipped.         |
++------------------------------+--------------------------------+-----------------------------------------+
+| log_p_vert_interp            | logical <i>[default: .true.]</i>      | If <em class="terminal">.true.</em>, vertical interpolation       |
+|                              |                                | is done in log-pressure. Otherwise,     |
+|                              |                                | linear.                                 |
++------------------------------+--------------------------------+-----------------------------------------+
+| use_u_for_wind               | logical <i>[default: .false.]</i>     | If <em class="terminal">.false.</em>, zonal and meridional        |
+|                              |                                | winds at cell centers are used for      |
+|                              |                                | the wind observation operator           |
+|                              |                                | [default]. In that case, triangular     |
+|                              |                                | meshes are used for the barycentric     |
+|                              |                                | (e.g., area-weighted) interpolation.    |
+|                              |                                | If <em class="terminal">.true.</em>, wind vectors at an           |
+|                              |                                | arbitrary (e.g., observation) point     |
+|                              |                                | are reconstructed from the normal       |
+|                              |                                | component of velocity on cell edges     |
+|                              |                                | <i>(u)</i> using radial basis functions        |
+|                              |                                | (RBFs) provided by the MPAS model.      |
++------------------------------+--------------------------------+-----------------------------------------+
+| use_rbf_option               | integer <i>[default: 2]</i>           | If <em class="terminal">use_u_for_wind = .true.</em>, this        |
+|                              |                                | option controls how many points will    |
+|                              |                                | be used in the RBF interpolation.       |
+|                              |                                | Options are available as 0, 1, 2, and   |
+|                              |                                | 3. All the edges available in N (=      |
+|                              |                                | 0,1,2, or 3) neighboring cells go       |
+|                              |                                | into the RBF reconstruction.            |
++------------------------------+--------------------------------+-----------------------------------------+
+| update_u_from_reconstruct    | logical <i>[default: .true.]</i>      | When zonal and meridional winds at      |
+|                              |                                | cell centers are used for the wind      |
+|                              |                                | observation operator                    |
+|                              |                                | (<em class="terminal">use_u_for_wind = .false.</em>), this        |
+|                              |                                | option decides if the normal            |
+|                              |                                | component of velocity on cell edges     |
+|                              |                                | (which is the only wind prognostic      |
+|                              |                                | variable in MPAS) should be             |
+|                              |                                | updated from the winds at cell          |
+|                              |                                | centers. If <em class="terminal">.true.</em>,                     |
+|                              |                                | <em class="terminal">use_increments_for_u_update</em>             |
+|                              |                                | should be also decided.                 |
+|                              |                                | If <em class="terminal">use_u_for_wind = .true.</em>              |
+|                              |                                | and the normal component of             |
+|                              |                                | velocity on cell edges is defined as    |
+|                              |                                | a state vector, this option should be   |
+|                              |                                | <em class="terminal">.false.</em> so the edge winds can be        |
+|                              |                                | directly updated by filter.             |
++------------------------------+--------------------------------+-----------------------------------------+
+| use_increments_for_u_update  | logical <i>[default: .true.]</i>      | Only if ``update_u_from_reconstruct     |
+|                              |                                | = .true.``, this option is used to      |
+|                              |                                | decide if the edge winds are replaced   |
+|                              |                                | by averaging from the analysis winds    |
+|                              |                                | at cell centers (<em class="terminal">.false.</em>), or           |
+|                              |                                | just updated by the analysis            |
+|                              |                                | increments at cell centers              |
+|                              |                                | (<em class="terminal">.true.</em>). If <em class="terminal">.true.</em>, all                |
+|                              |                                | the wind components (e.g., both at      |
+|                              |                                | cell centers and edges) are read from   |
+|                              |                                | prior and used to compute the           |
+|                              |                                | increments [Recommended].               |
++------------------------------+--------------------------------+-----------------------------------------+
+| model_perturbation_amplitude | real(r8) <i>[default: 0.0001]</i>     | The amplitude of random noise to add    |
+|                              |                                | when trying to perturb a single state   |
+|                              |                                | vector to create an ensemble. Only      |
+|                              |                                | used when ``start_from_restart =        |
+|                              |                                | .false.<em class="terminal"> in the </em>&filter_nml``            |
+|                              |                                | namelist within <em class="terminal">input.nml</em>               |
+|                              |                                | Multiplied by the state vector, it      |
+|                              |                                | produces standard deviation of a        |
+|                              |                                | gaussian distribution with the mean     |
+|                              |                                | at the value of the state vector        |
+|                              |                                | element.                                |
++------------------------------+--------------------------------+-----------------------------------------+
+| calendar                     | character(len=32)              | Character string specifying the         |
+|                              | <i>[default: 'Gregorian']</i>         | calendar being used by MPAS.            |
++------------------------------+--------------------------------+-----------------------------------------+
+| outside_grid_level_tolerance | real(r8) <i>[default: -1.0]</i>       | If greater than 0.0, amount of          |
+|                              |                                | distance in fractional model levels     |
+|                              |                                | that a vertical location can be above   |
+|                              |                                | or below the top or bottom of the       |
+|                              |                                | grid and still be evaluated without     |
+|                              |                                | error. Since <i>extrapolate</i> is not         |
+|                              |                                | implemented yet, the value of           |
+|                              |                                | <em class="terminal">.false.</em> will be assumed. In this        |
+|                              |                                | case, vertical locations equivalent     |
+|                              |                                | to level 1 or level N will be used.     |
+|                              |                                | Eventually, if <i>extrapolate</i> is           |
+|                              |                                | <em class="terminal">.true.</em>, extrapolate from the            |
+|                              |                                | first or last model level. If           |
+|                              |                                | <i>extrapolate</i> is <em class="terminal">.false.</em>, simply          |
+|                              |                                | use the value at level 1 for low        |
+|                              |                                | vertical locations, or at level N for   |
+|                              |                                | high vertical locations.                |
++------------------------------+--------------------------------+-----------------------------------------+
+| extrapolate                  | logical <i>[default: .false.]</i>     | <i>NOT IMPLEMENTED YET</i>. Vertical           |
+|                              |                                | locations equivalant to level 1 or      |
+|                              |                                | level N will be used. When this is      |
+|                              |                                | implemented, it will do:                |
+|                              |                                | If <i>outside_grid_level_tolerance</i> is      |
+|                              |                                | greater than 0.0, then control how      |
+|                              |                                | values are assigned to locations        |
+|                              |                                | where the vertical is exterior to the   |
+|                              |                                | grid. If this is <em class="terminal">.true.</em>, then           |
+|                              |                                | extrapolate low locations from levels   |
+|                              |                                | 1 and 2, and high locations from        |
+|                              |                                | levels N-1 and N. If this is            |
+|                              |                                | <em class="terminal">.false.</em>, then simply use the            |
+|                              |                                | corresponding values at level 1 or N.   |
+|                              |                                | This item is ignored if                 |
+|                              |                                | <em class="terminal">outside_grid_level_tolerance</em> is         |
+|                              |                                | less than or equal to 0.0.              |
++------------------------------+--------------------------------+-----------------------------------------+
+| debug                        | integer <i>[default: 0]</i>           | The switch to specify the run-time      |
+|                              |                                | verbosity.                              |
+|                              |                                |                                         |
+|                              |                                | - <em class="terminal">0</em> is as quiet as it gets              |
+|                              |                                | - <em class="terminal">>1</em> prints more run-time messages      |
+|                              |                                | - <em class="terminal">>5</em> prints ALL run-time messages       |
+|                              |                                |                                         |
++------------------------------+--------------------------------+-----------------------------------------+
+</pre>
+
+<p>
+Here is a diagram for the assimilation options for horizontal wind observations.
+<img src="MPAS_WindDA_options.png" style="height:700px; width:1000px">
+</p>
+</div>
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('interface')">
+<h3>3.3 The MPAS/DART workflow</h3>
+</div>
+
+<div id="interface" class="subsection">
+
+<p>
+The files compiled with DART that contain MPAS specific code are
+primarily in four fortran source files:
+</p>
+<ul>
+<li><em class="terminal">model_mod.f90</em>
+<li><em class="terminal">update_mpas_states.f90</em>
+<li><em class="terminal">update_bc.f90</em>
+<li><em class="terminal">mpas_dart_obs_preprocess.f90</em>
+</ul>
+
+<p>
+There are also several shell scripts including advance_model.csh to support cycling experiments. <br> 
+</p>
+
+<p>
+The fortran programs are controlled by namelist parameters defined in their own section
+in <em class="terminal">input.nml</em>.
+Users are expected to pay special attention to the namelist <em class="terminal">&model_nml</em> 
+and <em class="terminal">&mpas_vars_nml</em> for their MPAS-specific configuration.
+</p>
+<p>
+Here is a workflow of the MPAS/DART system.
+</p>
+<p>
+<img src="Cycling_workflow.png" style="height:500px; width:800px">
+</p>
+
+<p>
+As for all DART experiments, the overall design for an experiment is this: 
+the DART program <em class="terminal">filter</em> will read the model initial conditions or restart files
+for all ensemble members, the observation sequence file, and the DART namelist to set run-time options.
+</p>
+
+<p>The observations are assimilated and <em class="terminal">filter</em> exits.
+The <em class="terminal">advance_model.csh</em> script controls running the
+model for each ensemble member to advance the model state to the next assimilation time.
+It is responsible for getting all the input files, data files, namelists, etc. into a 
+temporary directory for each ensemble member, running the model, copying the 
+results back to the parent directory (which we call CENTRALDIR). 
+</p>
+
+<p>
+For high-level data assimilation workflows in DART or the output files from filter 
+(e.g., files listed in <em class="terminal">stages_to_write</em> in &amp;filter_nml), see 
+<a href="https://docs.dart.ucar.edu/en/stable/guide/high-level-da-workflows.html">
+https://docs.dart.ucar.edu/en/stable/guide/high-level-da-workflows.html</a> .
+</p>
+
+</div>
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('intro')">
+<h3>3.4 Model configuration for cycling experiments</h3>
+</div>
+
+<div id="intro" class="subsection">
+
+<p>
+Cycling of MPAS/DART is run in a <i>restart</i> mode. 
+For that, the MPAS namelist <em class="terminal">namelist.atmosphere</em> should be edited as below.
+
+<pre class="terminal">
+&restart
+   config_do_restart = true
+   config_do_DAcycling = true
+/
+</pre>
+</p>
+
+<p>
+If you use <em class="terminal">advance_model.csh</em> script provided in the <em class="terminal">shell_scripts</em> directory,
+it will automatically set these up for your cycling runs.
+</p>
+
+<p>
+The whole process hinges on setting the MPAS model namelist values such that 
+it is doing a restart for every model advance. For your model configuration (like physics options), 
+you need to edit your namelist.atmosphere in advance.
+</p>
+
+<p>
+After the ensemble analysis updates mpas_state_variables defined in &mpas_var_nml
+in input.nml (See below for a sample variable list), with <em class="terminal">config_do_DAcycling = .true.</em>,
+the MPAS model will recouple the state variables (updated by filter) with dry air density (e.g., rho) 
+before the model integration begins. This is critical because the the model only predicts 
+the flux (e.g., coupled) variables, meaning that the analysis updated by filter will not
+be passed onto the model without the recoupling process.
+</p>
+
+<p>
+Since DART is an ensemble algorithm, there are multiple analysis files for a
+single analysis time, one for each ensemble member. Because MPAS/DART is run in
+a restart mode, each member should keep its own MPAS restart file from the
+previous cycle (rather than having a single template file in CENTRALDIR).
+Creating the initial ensemble of states is an area of active research.
+</p>
+
+</div>
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('stream')">
+<h3>3.5 Input/Output streams</h3>
+</div>
+
+<div id="stream" class="subsection">
+
+<p>
+The basic stream of files between programs during the various steps of
+the assimilation cycle are this:
+</p>
+
+<pre>
+"filter_in.txt" : member1/restart.nc
+       |          member2/restart.nc
+       |
+       | as input_state_file_list in &filter_nml
+       V
+    <filter> - produces the EnKF analyses
+       |
+       | as output_state_file_list in &filter_nml
+       V
+"filter_out.txt" : member1/analysis.nc
+       |           member2/analysis.nc
+       |
+       | as input_file_list in &update_mpas_states_nml
+       V
+<update_mpas_states> - updates analysis vector in MPAS restart files for all members
+       |
+       | as output_file_list in &update_mpas_states_nml
+       V
+"filter_in.txt" : member1/restart.nc
+       |          member2/restart.nc
+       | same as input_state_file_list in &filter_nml
+       | (Warning: restart.nc are overwritten for analysis fields.)
+       V
+advance_model.csh ensemble_member_number
+(to run the MPAS model for each member with the member#/restart.nc until the next analysis time;
+ the resulting member#/restart.nc will be used as input to filter at the next analysis cycle)
+</pre>
+
+<p>
+The description of each file is summarized below.
+</p>
+
+<pre>
++----------------+-------------------------------------------------------------------+
+| filename       | purpose                                                           |
++================+======-============================================================+
+| input.nml      | to read the namelist - &model_mod_nml and &mpas_vars_nml          |
++----------------+-------------------------------------------------------------------+
+| restart.nc     | An MPAS restart file for each member, used as input (prior)       |
+|                | for filter and output (analysis) for the next model run           |
++----------------+-------------------------------------------------------------------+
+| analysis.nc    | time-variant analysis state (for each member) after assimilation  |
++----------------+-------------------------------------------------------------------+
+| mpas_init.nc   | init_template_filename for static info (ex. grid dimensions)      |
++----------------+-------------------------------------------------------------------+
+</pre>
+
+<p>
+Notes:
+<ul>
+<li>File names in filter_out.txt are editable by users 
+        as long as they remain the same throughout the cycles.
+<li>restart.nc can be replaced by init.nc for the very first cycle.
+        For the rest of cycles, restart.nc should be replaced by restart.$Y-$M-$D_$h.$m.$s.nc  
+        with the analysis time specified for each cycle.
+        This diagram omitted the time format for brevity, but the actual restart file names 
+        defined in filter_in.txt should match the restart filename_template defined in streams.atmosphere.
+<li>For the model run in each member directory, ensure streams.atmosphere 
+        (for the model I/O streams) defines the output_interval for the restart files
+        as the cycling frequency (ex. output_interval="06:00:00" for 6-h cycling).
+<li>lbc files defined in boundary_inout.txt should match filename_template for "lbc_in" 
+        in streams.atmosphere.
+<li>In &model_mod_nml, any MPAS init or restart file can be defined in init_template_filename. 
+        No time-variant info is read from it, so no need to update the file in init_template_filename.
+</ul>
+</p>
+
+</div>
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('regionalset')">
+<h3>3.6 Regional MPAS/DART</h3>
+</div>
+
+<div id="regionalset" class="subsection">
+
+<p>
+A limited-area version of the MPAS model can run with a simple change in the model's
+namelist (namelist.atmosphere) as below.
+
+<pre class="terminal">
+&limited_area
+    config_apply_lbcs = true 
+/   
+</pre>
+
+<p>
+And each ensemble member should have lateral boundary condition (lbc) files for two times - the analysis time 
+and the target time - based on the input_interval defined for the "lbc_in" stream in streams.atmosphere.
+But there is no need for recompling the codes for either DART or MPAS to switch from global to regional runs.
+</p>
+
+<p>
+In regional cycling, once the filter is complete over the domain, 
+the <em class="terminal">update_mpas_states</em> program updates the 
+analysis fields in the inner domain, which can potentially produce inconsistencies between 
+the inner cells and the boundary cells adjacent to them. To ensure consistency and a smooth transition 
+outward, the <em class="terminal">update_bc</em> program updates the boundary values 
+by blending the analysis and the (prior) boundary values in the relaxation zone.
+
+For that, <em class="terminal">update_bc</em> should be called right after 
+<em class="terminal">update_mpas_states</em> but before running advance_model.csh, with the namelist as below.
+</p>
+
+<pre class="terminal">
+&update_bc_nml
+  update_analysis_file_list           = 'filter_out.txt'
+  update_boundary_file_list           = 'boundary_inout.txt'
+</pre>
+
+<p>
+Warning: lbc files listed in boundary_inout.txt will be overwritten. <br>
+See section 4.4.4 for more details.
+</p>
+
+</div>
+
+</div>
+
+<!-- ============================================================================== --->
+<!-- ============================================================================== --->
+<div class="header" onClick="show('running')">
+<h2>4. Running an MPAS/DART Cycling Experiment </h2>
+</div>
+
+<div id="running" class="section">
+<p>
+This section will explain the details and specific steps in running
+an MPAS/DART cycling experiment.  
+</p>
+
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('initial-ens')">
+<h3>4.1 Create Initial Global Ensemble</h3>
+</div>
+
+<div id="initial-ens" class="subsection">
+
+<p>
+If you have access to an ensemble of grib files, then in the
+<em class="terminal">models/mpas_atm/shell_scripts</em> directory are:
+<pre class="terminal">
+driver_initial_ens.csh
+init_mpas_grib.csh
+</pre>
+</p>
+
+<p>
+which will convert an ensemble of grib files to an ensemble
+of mpas files.
+</p>
+
+<p>
+If you do not have an ensemble of grib files but do have a single
+global analysis file, you can create an ensemble with features built 
+into the filter program itself. The idea is to add tiny perturbations 
+to the analysis, letting them grow with cycles or over forecast times.
+</p>
+
+<p>
+In this case, you need to have two more executables:
+<pre class="terminal">
+WPS/ungrib.exe
+MPAS/init_atmosphere
+</pre>
+</p>
+
+<p>
+To download and install WPS, see
+<a href="https://github.com/wrf-model/WPS/">
+         https://github.com/wrf-model/WPS/</a> .
+ 
+<br><br>
+To build MPAS for initialization and for step 2 below, see
+<a href="https://www2.mmm.ucar.edu/projects/mpas/tutorial/v8.0/index.html">
+https://www2.mmm.ucar.edu/projects/mpas/tutorial/v8.0/index.html</a> .
+
+<p>
+Let us start with a GFS analysis 
+<a href="https://rda.ucar.edu/datasets/ds084.1/">
+https://rda.ucar.edu/datasets/ds084.1/</a>
+
+<ol>
+<li>Run WPS/ungrib.exe over the GFS file in grib format.
+   <ul>
+   <li>(Use namelist.wps.global to edit start_date and end_date. No worries about the rest.)
+   <li> FILE:YYYY-MM-DD_HH
+   </ul>
+</li>
+
+<li>Run MPAS/init_atmosphere (three times with config_init_case = 7, 
+   but changing streams.init_atmosphere for the corresponding input/output files.)
+   <ul>
+   <li> grid.nc, graph.info
+   <li> static.nc
+   <li> init.nc
+   </ul>
+</li>
+
+<li>Run DART/models/mpas_atm/work/filter with input.nml edited as below.
+
+   <pre class="terminal">
+   &filter_nml
+   perturb_from_single_instance = .true.
+   input_state_file_list    = 'filter_in.txt'
+   output_state_file_list   = 'filter_out.txt'
+   obs_sequence_in_name     = 'obs_seq1.out'
+   
+   &model_nml
+   model_perturbation_amplitude = 0.0001   # set a small but non-zero value
+    
+   </pre>
+
+   Notes:
+   <ol>
+   <li> filter_in.txt has a single line as member1/init.nc 
+   (which is copied from init.nc in step 2).
+
+   <li> filter_out.txt looks like
+   <pre class="terminal">
+   member1/analysis.nc
+   member2/analysis.nc
+   ... (as many members as ens_size; one per line for each member)
+   </pre>
+
+   <li> DART/models/mpas_atm/data/obs_seq1.out can be used, but the observation time 
+   at the second last line (e.g., 0   151945) should be first matched with
+   the model time in the mpas file in 'filter_in.txt'.
+   <br><br>
+   To find the corresponding gregorian time for the obs_seq file, use 'advance_time' as below.
+   <pre class="terminal">
+   ncdump -v xtime member1/init.nc | tail -2 | head -1 | cut -d ";" -f1 | sed -e 's/"//g'  
+   # => 2024-06-13_12:00:00
+   echo 2024-06-13_12:00:00 0 -g | ./advance_time  # =>    154661   43200
+   </pre>
+
+   Replace the second last line in obs_seq1.out with the new time (e.g., 43200   154661).
+   (Caution: The obs_seq file has seconds and days, not days and seconds.)
+
+   <li> Leave the rest of the parameters in input.nml as they are, and run filter,
+   which will perturb your single mpas file in filter_in.txt for
+   all the states listed as mpas_state_variables in &mpas_vars_nml in your input.nml,
+   then write out N ensemble members as listed in filter_out.txt.
+   </ol>
+</li>
+
+<li>Run DART/models/mpas_atm/work/update_mpas_states with an updated filter_in.txt.
+   <ul>
+   <li>First, copy init.nc from step 2 to each member directory.
+   <li>Then edit filter_in.txt with all the members listed as below.
+   <pre class="terminal">
+   member1/init.nc
+   member2/init.nc
+   ...
+   </pre>
+   <li> These init.nc files are now updated with perturbed states in analysis.nc for each member.
+   </ul>
+</li>
+
+<li>Run MPAS/atmosphere_model up to the initial cycle time in each member directory.
+   You might want to recenter the ensemble mean at the initial cycle before you get the cycling started.
+   Alternatively, you can skip this step and use initial ensemble (with tiny perturbations) generated
+   in step 4. In that case, you need to run many cycles until your ensemble spread gets saturated,
+   which might be costy. 
+   In the mesoscale applications, it is recommended to use the GFS analysis at least 7 days earlier than
+   the initial cycle time so that ensemble forecasts are run for 7 days (letting tiny perturbations grow).
+</li>
+
+</ol>
+
+
+<!--
+<pre class="terminal">
+$ add output here
+</pre>
+-->
+
+
+<!-- images 
+<img src="workflow.png"/>
+-->
+
+</div>
+
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('initial-reg')">
+<h3>4.2 Create Regional MPAS Files</h3>
+</div>
+
+<div id="initial-reg" class="subsection">
+
+<p>
+To create a regional MPAS ensemble, the global ensemble produced above should be cut out for 
+the region of interest. To produce a regional file from a global MPAS file (for each member), 
+use creat_region in 
+<a href="https://github.com/MPAS-Dev/MPAS-Limited-Area/">
+https://github.com/MPAS-Dev/MPAS-Limited-Area/ </a> . 
+Instructions can be found in Section 4.1 in the MPAS tutorial 
+<a href="https://www2.mmm.ucar.edu/projects/mpas/tutorial/v8.0/index.html">
+https://www2.mmm.ucar.edu/projects/mpas/tutorial/v8.0/index.html</a> .
+</p>
+
+</div>
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('obs-pre')">
+<h3>4.3 Observation Preprocessing and Preparation</h3>
+</div>
+
+<div id="obs-pre" class="subsection">
+
+<p>
+DART requires specific information about each observation to be assimilated.
+It currently has its own file format for observations, with a wide collection
+of converters from various formats into the DART format.
+See <a href="https://docs.dart.ucar.edu/en/latest/observations/obs_converters/README.html">
+https://docs.dart.ucar.edu/en/latest/observations/obs_converters/README.html</a> for more
+details.
+</p>
+
+<p>
+After converting into DART format, there are some MPAS-specific preprocessing
+that a user may want to do.  This includes operations like discarding obs
+which are outside a regional area, superob-ing very dense obs, increasing 
+obs error near regional borders, etc.  
+The <em class="terminal">mpas_dart_obs_preprocess</em> program has many
+options to do these things.
+</p>
+
+<p>
+This program allows users to do the following functions:
+
+<ul>
+<li>Combine multiple observation streams.
+<li>Remove observations outside the specified time window.
+<li>Remove observations above certain pressure/height levels
+<li>Remove observations where the model and obs topography are large.
+<li>Remove significant level rawinsonde data
+<li>Remove rawinsonde observations near TC core
+<li>Superob aircraft and satellite wind data
+<li>Average over observations within each voxel (in 3D).
+<li>Voxels are defined by mpas grid cells (read from grid_definition_filename
+    in &amp;model_nml) and the vertical ranges specified in the namelist.
+<li>Bad observations with qc higher than superob_qc_threshold is not used.
+<li>The highest qc and obs error available in each voxel are assigned to
+    the superobed observation.
+<li>Merge acars and aircraft observations into acars.
+</ul>
+</p>
+
+<p>
+Example namelist:
+<pre class="terminal">
+&amp;mpas_obs_preproc_nml
+
+  file_name_input          = 'obs_seq.old'
+  file_name_output         = 'obs_seq.new'
+
+  sonde_extra              = 'obs_seq.rawin'
+  land_sfc_extra           = 'obs_seq.land_sfc'
+  metar_extra              = 'obs_seq.metar'
+  marine_sfc_extra         = 'obs_seq.marine'
+  sat_wind_extra           = 'obs_seq.satwnd'
+  profiler_extra           = 'obs_seq.profiler'
+  gpsro_extra              = 'obs_seq.gpsro'
+  acars_extra              = 'obs_seq.acars'
+  gpspw_extra              = 'obs_seq.gpspw'
+  trop_cyclone_extra       = 'obs_seq.tc'
+
+  overwrite_obs_time       = .false.
+  windowing_obs_time       = .false.
+  windowing_int_hour       = 1.5
+
+  obs_boundary             = 0.0
+  increase_bdy_error       = .false.
+  maxobsfac                = 2.5
+  obsdistbdy               = 15.0
+
+  sfc_elevation_check      = .false.
+  sfc_elevation_tol        = 300.0
+  obs_pressure_top         = 0.0
+  obs_height_top           = 2.0e10
+
+  include_sig_data         = .true.
+  tc_sonde_radii           = -1.0
+  superob_qc_threshold     = 4
+
+  superob_aircraft         = .false.
+  aircraft_horiz_int       = 36.0
+  aircraft_pres_int        = 2500.0
+
+  superob_sat_winds        = .false.
+  sat_wind_horiz_int       = 100.0
+  sat_wind_pres_int        = 2500.0
+
+  overwrite_ncep_satwnd_qc = .false.
+  overwrite_ncep_sfc_qc    = .false.
+
+  max_num_obs              = 1000000
+/
+</pre>
+</p>
+
+
+</div>
+
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('loop')">
+<h3>4.4 Cycling experiments</h3>
+</div>
+
+<div id="loop" class="subsection">
+
+<p>
+The following sections describe the steps for cycling runs.
+The assimilation updates the model states to be more
+consistent with the observations, and then the model 
+is run for each of the ensemble members until the next cycle.
+</p>
+
+<p>
+Several scripts are provided to do this. The main <i>driver</i>
+script is <em class="terminal">driver_mpas_dart.csh</em>.
+</p>
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('driver')">
+<h3>4.4.1 The Driver Script</h3>
+</div>
+
+<div id="driver" class="subsection">
+
+
+<p>
+The driver script is the one which is usually submitted to the
+batch system to run a cycling data assimilation experiment.  It assumes
+both MPAS and DART have been compiled with MPI enabled, and that MPI
+is available at runtime.
+</p>
+
+
+<p>
+Notes:
+<ol>
+<li>  For the general configuration including all the file names, edit setup.csh.
+<li>  For the model configuration, our general policy is that we only edit the parameters that
+     affect the I/O stream here and leave all the rest unchanged (ex. physics options). 
+     This means that it is the user's responsibility to edit all other namelist parameters 
+     before running this script. One exception is the time info, which will be updated inside 
+     advance_model.csh for each cycle.
+<li>  This script does NOT specify all the options available for the EnKF data assimilation either.
+     For your own complete filter design, you need to edit your input.nml
+     - at least &filter_nml, &obs_kind_nml, &model_nml, &location_nml and &mpas_vars_nml sections 
+     to set up your filter configuration before running this script.
+<li>  For adaptive inflation, we only support the choice of prior adaptive inflation in the state
+     space here. For more options, check DART/assimilation_code/modules/assimilation/filter_mod.html.
+<li>  All the logical parameters are case-sensitive. They should be either true or false.
+<li>  All the output files will be locally stored. 
+     For a large ensemble run, check if you have enough disk space before running this script.
+<li>  As of June 2024, regional MPAS-DART cycling (w/ MPAS V8+) is also supported in this script.
+</ol>
+</p>
+
+<p>
+All the template files listed below are available in either shell_scripts or data under DART/models/mpas_atm/.
+Required scripts to run this driver:
+<ol>
+<li>  setup.csh                  (for the general configuration of this experiment)
+<li>  namelist.atmosphere        (for mpas)   - a namelist template for mpas.
+<li>  input.nml                  (for filter) - a namelist template for filter. 
+<li>  filter.template.pbs        (for an mpi filter run; with async >= 2)
+<li>  advance_model.template     (for an mpi mpas run; using separate nodes for each ensemble member)
+<li>  advance_model.csh          (for mpas/filter) - a driver script to run mpas forecast at each cycle
+</ol>
+</p>
+
+<p>
+Input files to run this script:
+<ol>
+<li>input_state_file_list  - a list of input ensemble netcdf files for DART/filter
+<li>output_state_file_list - a list of output ensemble netcdf files from DART/filter
+<li>RUN_DIR/member#/${mpas_filename}    - the input file listed in input_state_file_list for each member
+<li>OBS_DIR/${obs_seq_in}.${YYYYMMDDHH} - obs sequence files for each analysis cycle (YYYYMMDDHH) 
+     for the entire period.
+</ol>
+</p>
+
+</div>
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('da-run')">
+<h3>4.4.2 Running Filter for Ensemble DA</h3>
+</div>
+
+<div id="da-run" class="subsection">
+
+
+<p>
+This program is called by the driver script, but the filter configuration should be edited through 
+<em class="terminal">&filter_nml</em> in input.nml in advance. For instance, users should define 
+<em class="terminal">ens_size</em> for their own ensemble size and the entire <em class="terminal">inf_flavor</em> 
+section for adaptive inflation. Users are expected to review input.nml carefully and ensure that the parameters are
+appropriately set up for their own input datasets and ensemble configuration (such as localization and outlier thresholds).
+</p>
+
+<p>
+A sample input.nml is provided in DART/mpas_atm/data/.
+</p>
+
+</div>
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('updatestates-run')">
+<h3>4.4.3 Running update_mpas_states</h3>
+</div>
+
+<div id="updatestates-run" class="subsection">
+
+<p>
+This program is called by the driver script.
+</p>
+
+<p>
+The filter program updates the state vector (the list of mpas_state_variables in &mpas_var_nml)
+in the analysis file for each ensemble member (listed in ‘filter_out.txt’). 
+</p>
+
+<p>
+To pass the analysis state onto the MPAS model this program overwrites the variables in the 
+prior forecast file (listed in ‘filter_in.txt’). The update_mpas_states program does three things:
+<ul>
+<li>Overwrites the analysis variables (defined in mpas_state_variables) in the prior forecast file (listed in ‘filter_in.txt’).
+<li>Updates edge_wind (‘u’) based on the analysis in uReconstructZonal and uReconstructMeridional variables 
+if update_u_from_reconstruct = .true. and use_u_for_wind = .false. (default).
+<ol>
+Notes:
+<li>if use_increments_for_u_update = .true. (default), edge_wind (‘u’) will be updated 
+from the analysis increments in uReconstructZonal and uReconstructMeridional, meaning that ‘u’ will be updated incrementally. 
+If use_increments_for_u_update = .false., ‘u’ will be recomputed from the uReconstructZonal 
+and uReconstructMeridional analysis values, meaning that the whole value of ‘u’ will be replaced by a new value. 
+<li>If ‘u’ is included in the state vector (e.g., mpas_state_variables), ‘u’ was already directly 
+updated by filter (e.g., through linear regression), and updating edge winds is not required.
+</ol>
+<li>Clamps out-of-range data values to the bounds for each variable listed in the 
+namelist <em class="terminal">mpas_state_bounds</em> in <em class="terminal">&amp;mpas_vars_nml</em>.
+</ul>
+
+
+<p>
+The namelist associated with <em class="terminal">update_mpas_states</em> is:
+
+<pre>
+&amp;update_mpas_states_nml
+  update_input_file_list  = 'filter_out.txt'
+  update_output_file_list = 'filter_in.txt'
+  print_data_ranges       = .true.
+  /
+</pre>
+</p>
+
+<p>
+The input file list (update_input_file_list) should be the same as the output 
+from filter (e.g., output_state_file_list). 
+</p>
+
+<p>
+For cycling, the output file list (update_output_file_list) should be the same 
+as input_state_file_list in &filter_nml.
+</p>
+
+<p>
+These file lists can contain all the ensemble files, or a single ensemble member.
+The update_mpas_states program can run for all ensemble members (having all the 
+ensemble files in the file lists). 
+But because it is a serial program, this program can be separately called for 
+each member (with the file list containing the particular member only). 
+</p>
+
+</div>
+
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('updatebc-run')">
+<h3>4.4.4 Running update_bc for Regional Models</h3>
+</div>
+
+<div id="updatebc-run" class="subsection">
+
+<p>
+This program is called by the driver script if running a regional case.
+</p>
+
+<p>
+In regional cycling <em class="terminal">update_bc</em> should be called to 
+update the lateral boundary condition (lbc) file at the analysis time for each 
+ensemble member right after <em class="terminal">update_mpas_states</em> and 
+before running the regional model (through <em class="terminal">advance_model.csh</em>).
+</p>
+
+<p>
+The namelist associated with <em class="terminal">update_bc</em> is:
+
+<pre>
+&amp;update_bc_nml
+  update_analysis_file_list = 'filter_out.txt'
+  update_boundary_file_list = 'boundary_inout.txt'
+  debug                     = .false.
+  /
+</pre>
+</p>
+
+<p>
+The input of <em class="terminal">update_bc</em> ('filter_out.txt') should be the same 
+as the one for update_input_file_list in &amp;update_mpas_states_nml. 
+'boundary_inout.txt' contains the lbc file at the analysis time. 
+Since <em class="terminal">update_bc</em> is a serial program (like <em class="terminal">update_mpas_states</em>), 
+it is recommended to run it for each ensemble member (meaning that a single lbc file 
+for the member is listed in 'boundary_inout.txt'). 
+
+</div>
+
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('advance-run')">
+<h3>4.4.5 Advancing the ensemble of MPAS Models</h3>
+</div>
+
+<div id="advance-run" class="subsection">
+
+<p>
+The <em class="terminal">advance_model.csh</em> script runs the MPAS model
+for each of the ensemble members to advance the model state from the current
+time to the next assimilation time.
+</p>
+
+<p>
+This program is called by the driver script.
+</p>
+
+
+<p>
+This script is called by advance_model.template in driver_mpas_dart.csh
+after the analysis step is done at each cycle.  It performs the following:
+
+<ol>
+<li>Creates a temporary directory to run an MPAS-A realization (see options)
+<li>Gets all the files necessary for the model run in the member directory.
+<li>Updates an MPAS namelist from a template with new dates.
+<li>Runs the MPAS-A model in a restart mode until the target time is reached.
+<li>Regional MPAS is also supported, if chosen.
+<li>Checks for incomplete runs.
+<li>Saves horizontal winds if save_wind = true (for extended forecasts later).
+</ol>
+
+</p>
+
+<p>
+Notes:
+<ol>
+<li>This script supports MPAS V7+ and the Manhattan release of DART. 
+          It is NOT backward compatible for older versions.
+<li>MPAS is run in a restart mode during the cycles, which means
+          both input and output of the model run are restart files.
+          This also means that one should not delete the member directory as
+          one needs to keep the restart file for each member during the cycle.
+<li>The input analysis file should be provided through update_mpas_states 
+          (which is supposed to be run before running this script).
+<li>For the required data to run this script, check the section of 'dependencies'.
+<li>Anything specific to the experiment is supposed to be provided in ${CENTRALDIR}/.
+</ol>
+
+</p>
+
+<p>
+The script takes 2 arguments, the ensemble member number and the maximum
+number of ensemble members.
+</p>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ============================================================================== --->
+<!-- ============================================================================== --->
+<div class="header" onClick="show('diags')">
+<h2>5. Running diagnostics</h2>
+</div>
+
+<div id="diags" class="subsection">
+
+<p>
+The DART system comes with a suite of diagnostic routines written in Matlab
+that allow the user to determine whether the assimilation is working correctly.
+See the DART documentation here:
+<a href="https://docs.dart.ucar.edu/en/latest/guide/checking-your-assimilation.html">
+https://docs.dart.ucar.edu/en/latest/guide/checking-your-assimilation.html</a>
+for more details.
+</p>
+
+</div>
+
+
+</div>
+
+
+
+
+<!-- ============================================================================== --->
+<!-- ============================================================================== --->
+<div class="header" onClick="show('more')">
+<h2>6. More help </h2>
+</div>
+
+<div id="more" class="subsection">
+
+<p>
+Information about installing and running MPAS-A can be found at 
+<a href="https://www2.mmm.ucar.edu/projects/mpas/tutorial/v8.0/index.html" target="_blank">
+https://www2.mmm.ucar.edu/projects/mpas/tutorial/v8.0/index.html</a>.
+</p>
+
+<p>
+The DART online documentation 
+<a href="https://docs.dart.ucar.edu/en/latest/index.html">
+https://docs.dart.ucar.edu/en/latest/index.html</a>
+has extensive information on running DART as well as
+information about Data Assimilation theory.
+</p>
+
+<p>
+Also, for more details or any questions, please contact Soyoung Ha (syha@ucar.edu) or dart@ucar.edu.
+</p>
+
+
+</div>
+
+</div>
+
+
+</body>
+
+</html>
