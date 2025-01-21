@@ -1179,7 +1179,7 @@ $ vi params.tcsh
 You might need to set the  <em class="terminal">$WPS_DIR</em> environment variable if you plan to run initial MPAS-A ensemble forecasts from an external dataset. This is because  <em class="terminal">ungrib.exe</em> generates intermediate files that are necessary for creating the initial conditions for MPAS-A.
 
 <p>
-Then, run  <em class="terminal">$setup.csh</em>. This will create an experimental directory for the tutorial cases at  <em class="terminal">$$BASE_DIR</em>.
+Then, run  <em class="terminal">setup.csh</em>. This will create an experimental directory for the tutorial cases at  <em class="terminal">$BASE_DIR</em>.
 
 <pre class="terminal">
 $ ./setup.tcsh params.tcsh
@@ -1625,7 +1625,7 @@ is run for each of the ensemble members until the next cycle.
 
 <p>
 Several scripts are provided to do this. The main <i>driver</i>
-script is <em class="terminal">driver_mpas_dart.csh</em>.
+script is <em class="terminal">driver_dart_advance.csh</em>.
 </p>
 
 
@@ -1868,7 +1868,7 @@ to the next assimilation time.
 </p>
 
 <p>
-This script calls <em class="terminal">atmosphere_model</em> program in <em class="terminal">driver_mpas_dart.tcsh</em>
+This script calls <em class="terminal">atmosphere_model</em> program in <em class="terminal">driver_dart_advance.tcsh</em>
 after the analysis step is done at each cycle.  It performs the following:
 
 <ol>
