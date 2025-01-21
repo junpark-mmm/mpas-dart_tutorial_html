@@ -1272,7 +1272,7 @@ This  <em class="terminal">driver_initial_ens.tcsh</em> script requires 3 argume
 <p>
 To create 336-hour forecasts from 00 UTC on Apr 17, 2019, run the following command: 
 <pre class="terminal">
-./driver_initial_ens.tcsh 2019041700 336 params.csh
+./driver_initial_ens.tcsh 2019041700 336 params.tcsh
 </pre>
 
 <p>
@@ -1993,6 +1993,8 @@ data:
 }
 </pre>
 
+<p>
+The exact dianogstics values can be different depending on the flag option, compiler, machine, and so on.
 
 </div>
 
@@ -2119,15 +2121,28 @@ for the member is listed in 'boundary_inout.txt').
 
 <div id="ubuntu_example" class="subsection">
  <p>
- This tutorial material was tested with local laptop using Ubuntu. The machine is Dell G5 5515 Laptop with Ryzen 5 5600H core with 24 GB memory.
- You may need to install those libaries if you are not prepared those libraries.
+ This tutorial material was also tested with local laptop using Ubuntu 22.04.5 LTS. The Dell G5 5515 Laptop with Ryzen 5 5600H CPU (8C/12T) with 24 GB memory is utilized but at least ~16 GB memory is required in that MPAS-A (filter) requires ~ 8 (12) GB memory for the current tutorial material.
+ You may need to install those libaries if you have not prepared those libraries. In the test, the below libraries were compiled and employed (as of Jan 21, 2025)
  <p>
- 1) hdf5 and netCDF: 
+ <ol>
+ <li>hdf5 v11.4.5: <a href="https://support.hdfgroup.org/downloads/index.html">
+https://support.hdfgroup.org/downloads/index.html</a>
+ <li>netCDF-c v4.9.2 / netCDF-cxx v4.3.1 / netCDF-fortran v4.5.3: <a href="https://downloads.unidata.ucar.edu/netcdf/">
+https://downloads.unidata.ucar.edu/netcdf/</a>
+ <li>mpi library (e.g., MPICH v4.3.0b1) <a href="https://www.mpich.org/downloads/">
+ https://www.mpich.org/downloads/</a>
+ <li>parallel netcdf v1.13.0 <a href="https://parallel-netcdf.github.io/wiki/Download.html">
+ https://parallel-netcdf.github.io/wiki/Download.html</a>
+ </ol>
+
  <p>
- 2) mpi library
- <p>
- 3) other tools
- </p>
+ if your machine does not enough memory, you may consider below solutions.
+<ol>
+<li>reduce the total number of ensemble members
+<li>utilze the low resolution meshes such as 384-km or 480-km instead of using ~240 km grid.
+ You can obtain grid/static file for those at <a href="https://mpas-dev.github.io/atmosphere/atmosphere_meshes.html">
+ https://mpas-dev.github.io/atmosphere/atmosphere_meshes.html</a>
+</ol>
 
 </div>
 
