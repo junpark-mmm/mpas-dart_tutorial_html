@@ -1,6 +1,6 @@
 <!doctype html>
 
-<!-- Copyright (c) 2024, the University Corporation for Atmospheric Research (UCAR). -->
+<!-- Copyright (c) 2025, the University Corporation for Atmospheric Research (UCAR). -->
 
 <html>
     
@@ -22,7 +22,7 @@
     div.subsection {max-width:900px; display:none; margin-left:30px;}
     div.hint {max-width:900px; display:none; margin-left:30px;}
     div.outlined {max-width:870px; padding-left:15px; padding-right:15px; border-style:solid; border-width:thin; border-color:red;}
-    pre.terminal {font-family:"Courier New",Courier,monospace; font-weight:bold; margin-left:15px;}
+    pre.terminal {font-family:"Courier New",Courier,monospace; font-weight:bold; margin-left:15px;background-color:beige;max-width=5000px}
     em.terminal {font-family:"Courier New",Courier,monospace; font-weight:bold; font-style:normal;}
     em.highlight {background-color: yellow; font-style:normal;}
     em.prompt {user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; font-style:normal;}
@@ -78,25 +78,12 @@ function jump(sectionid='')
 
 <p class="top">
 This web page is intended to help a new user set up the
-DART data assimilation system with the 
+Data Assimilation Research Testbed (DART) data assimilation system with the
 <a href="https://ncar.ucar.edu/what-we-offer/models/model-prediction-across-scales-mpas">
 Model for Prediction Across Scales (MPAS)</a>.
 The details of the steps in each section can be viewed by clicking on the headers.
 For the description of the system, go to the overview in Section 3.
 </p>
-
-<!--
-<p class="top">
-DO WE HAVE SOME MPAS RESTART FILES THAT WE CAN TELL USERS TO DOWNLOAD?  SOMETHING SMALL, AND REGIONAL MAYBE?
-<br><br>
-In order to work through these exercises on your own computer, you will need to <a href="input_data/mpas_tutorial.tar.gz">
-download the tar file with all input files</a>. Note that the download is about 3.2 GB, and unpacking the .tar.gz file
-will require about 21.5 GB of space.
-<br>
-<b>After unpacking the input files, you will need to set the environment variable <em class="terminal">$MPAS_TUTORIAL</em>
-to the absolute path of the resulting <em class="terminal">mpas_tutorial</em> directory.</b>
-</p>
--->
 
 <p class="top">
 While going through this guide you may find it helpful to have a copy of the DART On-line
@@ -107,18 +94,9 @@ in a new window.
 
 You may also find it helpful to have the
 MPAS-Atmosphere Users' Guide available in another window as well.
-Click <a href="http://www2.mmm.ucar.edu/projects/mpas/mpas_atmosphere_users_guide_8.0.pdf" target="_blank">here</a> 
-to open the MPAS Users' Guide (for Version 8.0) in a new window.
+Click <a href="http://www2.mmm.ucar.edu/projects/mpas/mpas_atmosphere_users_guide_8.2.0.pdf" target="_blank">here</a> 
+to open the MPAS Users' Guide (for Version 8.2.0) in a new window.
 </p>
-
-<!--
-<p class="top">
-ARE WE SUGGESTING PEOPLE RUN THIS ON THEIR OWN MACHINES OR ON DERECHO ONLY?
-WHAT MACHINE IS SOYOUNG'S TUTORIAL RUNNING ON?
-<br><br>
-</p>
--->
-
 
 <!-- ============================================================================== -->
 <!-- ============================================================================== -->
@@ -132,12 +110,12 @@ DART is tailored to work with the unchanged MPAS Atmosphere model, so before sta
 install and run DART you should follow the steps to download and run MPAS-A first.
 Once that is complete, then the next step is to download DART and build it.
 Information about installing and running MPAS-A can be found at 
-<a href="https://www2.mmm.ucar.edu/projects/mpas/tutorial/v8.0/index.html" target="_blank">
-https://www2.mmm.ucar.edu/projects/mpas/tutorial/v8.0/index.html</a>.
+<a href="https://www2.mmm.ucar.edu/projects/mpas/tutorial/Virtual2024/" target="_blank">
+https://www2.mmm.ucar.edu/projects/mpas/tutorial/Virtual2024/</a>.
 <p>
 DART requires the NetCDF libraries, an MPI-2 implementation, and access to
-Matlab to run the diagnostic routines.  The scripting is mostly in C-Shell with some
-Bash.
+Matlab (optional; if you are going to run the diagnostic routines in the scripts). The scripting is mostly in tc-Shell.
+
 <p>
 If you have access to the NSF NCAR <a href="https://arc.ucar.edu/knowledge_base/74317833" target="_blank">derecho</a> 
 HPC system, DART will run there with the addition of loading the HDF module (see below for more details.)
@@ -153,7 +131,7 @@ HPC system, DART will run there with the addition of loading the HDF module (see
 <div id="obtaining_building" class="section">
 <p>
 DART is a community facility which includes a collection of tools and utilities 
-for Data Assimilation.  It is distributed as source code because there are many 
+for Data Assimilation. It is distributed as source code because there are many 
 options and customizations which need to be selected at compile time.
 
 The instructions in this section will explain how to obtain a copy of
@@ -183,9 +161,8 @@ the repository directly on the command-line.
 <p>
 <b>
 Normally the main DART repository should be used when starting a data assimilation project.
-But for this tutorial only, there is updated code for Regional MPAS and Radar obs support which
-is not yet in the main DART repository. The following command should be used to download
-the DART code from a different repository.  
+However, there is updated code for Regional MPAS and Radar obs support which
+is not available yet in the main DART repository.This tutorial will guide you through downloading DART version 11.8.5 (released November 2024) from the main repository.
 </b>
 </p>
 
@@ -194,16 +171,7 @@ From within your <em class="terminal">${HOME}</em> directory run:
 </p>
 
 <pre class="terminal">
-$ git clone https://whatever your own repo is syha...   DART
-$ git checkout name_of_right_branch
-</pre>
-
-<p>
-For other uses, the main DART repo code can be downloaded with this command:
-</p>
-
-<pre class="terminal">
-$ git clone https://github.com/NCAR/DART.git  DART
+$ git clone -b v11.8.5 https://github.com/NCAR/DART.git  DART
 </pre>
 
 <p>
@@ -213,13 +181,13 @@ the output to the terminal should look something like the following:
 
 <pre class="terminal">
 Cloning into 'DART'...
-remote: Enumerating objects: 109322, done.
-remote: Counting objects: 100% (1659/1659), done.
-remote: Compressing objects: 100% (754/754), done.
-remote: Total 109322 (delta 974), reused 1498 (delta 897), pack-reused 107663
-Receiving objects: 100% (109322/109322), 634.19 MiB | 2.55 MiB/s, done.
-Resolving deltas: 100% (80536/80536), done.
-Updating files: 100% (3403/3403), done.
+remote: Enumerating objects: 113034, done.
+remote: Counting objects: 100% (2331/2331), done.
+remote: Compressing objects: 100% (920/920), done.
+remote: Total 113034 (delta 1787), reused 1472 (delta 1387), pack-reused 110703 (from 3)
+Receiving objects: 100% (113034/113034), 672.86 MiB | 28.66 MiB/s, done.
+Resolving deltas: 100% (82659/82659), done.
+Note: switching to '2d5882c3084dcdfd2f57a01b505c7fe039689cba'.
 </pre>
 
 <p>
@@ -228,25 +196,27 @@ We should now have an <em class="terminal">DART</em> directory:
 
 <pre class="terminal">
 $ ls -l DART
-total 224
--rw-r--r--   1 user  staff  62453 Oct 19  2023 CHANGELOG.rst
--rw-r--r--   1 user  staff  11377 Oct 19  2023 LICENSE
--rw-r--r--   1 user  staff   2069 Oct 19  2023 README.md
-drwxr-xr-x   6 user  staff    192 Oct 19  2023 assimilation_code
-drwxr-xr-x  24 user  staff    768 Oct 24  2023 build_templates
--rw-r--r--   1 user  staff   3226 Oct 19  2023 conf.py
--rw-r--r--   1 user  staff    613 Oct 19  2023 copyright.rst
-drwxr-xr-x  14 user  staff    448 Oct 19  2023 developer_tests
-drwxr-xr-x   3 user  staff     96 Oct 19  2023 diagnostics
-drwxr-xr-x  83 user  staff   2656 Oct 19  2023 guide
--rw-r--r--   1 user  staff  21017 Oct 19  2023 index.rst
-drwxr-xr-x  52 user  staff   1664 Oct 19  2023 models
-drwxr-xr-x   4 user  staff    128 Oct 19  2023 observations
-drwxr-xr-x   4 user  staff    128 Oct 19  2023 theory
+total 137
+drwxr-xr-x  6 junpark ncar  4096 Jan 10 10:50 assimilation_code
+drwxr-xr-x  2 junpark ncar  4096 Jan 10 10:50 build_templates
+-rw-r--r--  1 junpark ncar 74556 Jan 10 10:50 CHANGELOG.rst
+-rw-r--r--  1 junpark ncar   321 Jan 10 10:50 CITATION.cff
+-rw-r--r--  1 junpark ncar  3220 Jan 10 10:50 conf.py
+-rw-r--r--  1 junpark ncar   613 Jan 10 10:50 copyright.rst
+drwxr-xr-x 19 junpark ncar  4096 Jan 10 10:50 developer_tests
+drwxr-xr-x  3 junpark ncar  4096 Jan 10 10:50 diagnostics
+drwxr-xr-x  8 junpark ncar  4096 Jan 10 10:50 guide
+-rw-r--r--  1 junpark ncar 25673 Jan 10 10:50 index.rst
+-rw-r--r--  1 junpark ncar 11377 Jan 10 10:50 LICENSE
+drwxr-xr-x 53 junpark ncar  4096 Jan 10 10:50 models
+drwxr-xr-x  4 junpark ncar  4096 Jan 10 10:50 observations
+-rw-r--r--  1 junpark ncar  2060 Jan 10 10:50 README.md
+drwxr-xr-x  2 junpark ncar  4096 Jan 10 10:50 theory
 </pre>
 
 <p>
-That's it! We now have a copy of the latest release of the DART source code.
+That's it! We now have a copy of the v11.8.5 release of the DART source code.
+The future DART can also be supported unless there are significant updates.
 </p>
 
 </div>
@@ -271,10 +241,20 @@ $ ls -l
 <p>
 Look for the <em class="terminal">mkmf.tempate.xxx</em> or <em class="terminal">mkmf.template.xxx.xxx</em> 
 which is closest to your compiler and platform.  Link or copy it into a file 
-named <em class="terminal">mkmf.template</em>, e.g.:
+named <em class="terminal">mkmf.template</em>, For example, if you are going to use GNU compiler,
 </p>
+
 <pre class="terminal">
 $ cp mkmf.template.gfortran mkmf.template
+$
+</pre>
+
+<p>
+In the case of employing intel compiler at NCAR <i>derecho</i> HPC, you can employ the below file
+</p>
+
+<pre class="terminal">
+$ cp mkmf.template.intel.linux mkmf.template
 $
 </pre>
 
@@ -286,12 +266,15 @@ the netCDF libraries are set:
 
 <pre class="terminal">
 $ which mpif90
-/usr/local/cmpwrappers/mpif90
+/glade/u/apps/derecho/23.09/spack/opt/spack/ncarcompilers/1.0.0/oneapi/2023.2.1/6q5s/bin/mpi/mpif90
 
 $ echo $NETCDF
-/usr/local/netcdf-4.7.0-gcc
-
+/glade/u/apps/derecho/23.09/spack/opt/spack/netcdf/4.9.2/oneapi/2023.2.1/yzvj
 </pre>
+
+<p>
+You may see the above variables based on your own working environment (e.g., NCAR <i>derecho</i>).
+</p>
 
 <p>
 If you are running on the NSF NCAR <i>derecho</i> computer, you may need to
@@ -305,7 +288,7 @@ $ module load hdf
 
 <p>
 If you want to compile in a single precision (r4), 
-edit DART/assimilation_code/modules/utilities/types_mod.f90, as below.
+please edit DART/assimilation_code/modules/utilities/types_mod.f90, as below.
 
 <pre class="terminal">
 !integer, parameter :: r8 = SELECTED_REAL_KIND(12)   ! 8 byte reals
@@ -326,7 +309,7 @@ Without this change, the default compilation will use double precision (r8).
 <div id="lorenz96" class="subsection">
 <p>
 This section is neither mandatory nor prerequsite for MPAS/DART runs.
-But if you want to compile and run a simple test of the Lorenz 96 model first to ensure 
+However, if you want to compile and run a simple test of the Lorenz 96 model first to ensure 
 the compile and the environment is correct, go to the Lorenz 96 model directory:
 
 <pre class="terminal">
@@ -335,34 +318,32 @@ $ cd DART/models/lorenz_96/work
 </pre>
 
 <p>
+If you run this example, you may need to load the NCO library, as 'ncgen' need to generate two netCDF files from CDL files.
+
+<p>
 We'll begin by compiling all the executables associated with running
-the Lorenz 96 model by running a script:
+the Lorenz 96 model by running a script: 
+
 
 <pre class="terminal">
-$ ./quickbuild.sh
+$ ./quickbuild.sh nompi
 
 </pre>
 
 <p>
 When the script finishes, you should have several executables in
 the current directory, including <em class="terminal">filter</em>
-which is the main data assimilation executable.
+which is the main data assimilation executable. 
+This tells that you can compile MPAS/DART excutables in your working environment.
 </p>
 
 <pre class="terminal">
 $ ls
-closest_member_tool	  input.nml	      perfect_input.cdl
-create_fixed_network_seq  input.workshop.nml  perfect_input.nc
-create_obs_sequence	  integrate_model     perfect_model_obs
-dart_log.nml		  Makefile	      perfect_output.nc
-dart_log.out		  model_mod_check     pmo_input_member_0001.nc
-fill_inflation_restart	  obs_common_subset   preprocess
-filter			  obs_diag	      quickbuild.sh
-filter_input.cdl	  obs_seq.in	      true_state.nc
-filter_input_list.txt	  obs_seq.in.power    workshop_setup.sh
-filter_input.nc		  obs_seq.out
-filter_output_list.txt	  obs_sequence_tool
-
+closest_member_tool       fill_inflation_restart  filter_output_list.txt  model_mod_check    obs_seq.out        pmo_input_member_0001.nc
+create_fixed_network_seq  filter                  input.nml               obs_common_subset  obs_sequence_tool  preprocess
+create_obs_sequence       filter_input.cdl        input.workshop.nml      obs_diag           perfect_input.cdl  quickbuild.sh
+dart_log.nml              filter_input_list.txt   integrate_model         obs_seq.in         perfect_input.nc   workshop_setup.sh
+dart_log.out              filter_input.nc         Makefile                obs_seq.in.power   perfect_model_obs
 </pre>
 
 <p>
@@ -1130,26 +1111,224 @@ This section will explain the details and specific steps in running
 an MPAS/DART cycling experiment.  
 </p>
 
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('prep_exp')">
+<h3>4.1 Obtaining Test Data and Preparing Experiment</h3>
+</div>
+
+<div id="prep_exp" class="subsection">
+<p>
+This global MPAS-DART tutorial was tested with a ~240 km global domain (nCells=10,242) using MPAS-A v8.2.0 and DART v11.8.5. The tutorial uses 14-day forecasts with 10 ensemble members for the first cycle, initialized at 00 UTC on Apr 17, 2019. It also includes observation sequence files for 9 days to enable users to conduct cycling experiments.
+
+<p>
+To clone the tutorial scripts from <a href="https://github.com/junpark-mmm/mpas-dart_tutorial_scripts" target="_blank">github.com/junpark-mmm/mpas-dart_tutorial_scripts</a>, use the following command:
+<p>
+
+<pre class="terminal">
+   git clone https://github.com/junpark-mmm/mpas-dart_tutorial_srcripts.git
+</pre>
+
+<p>
+These scripts will be merged into the official DART repository in the future. After the merge, you can obtain and run them directly from the <em class="terminal">DART/models/mpas_atm/shell_scripts</em> directory.
+<p>
+
+<p>
+Additionally, you need to download the tutorial test data. This data is available as a .tgz file (approximately 2.2 GB) from the following link: <a href="https://drive.google.com/file/d/175dxvoQki3CN8-fnayQV_EBYb3mvQTxj/view?usp=sharing" target="_blank">google_drive_link_for_now</a>.
+<p>
+This includes:
+<ul>
+<li>initial condition files
+<li>10-member intial background MPAS-A forecast ensemble
+<li>observation sequence files for 9 days
+<li>template and static data
+</ul>
+
+<p>
+After placing the .tgz file in the tutorial script directory, you should see the following files. The figure below illustrates the role of each script and provides a brief flowchart for the tutorial.
+<img src="TUTORIAL_FLOWCHART.png">
+
+<p>
+First, you need to modify <em class="terminal">params.tcsh</em> to prepare tutorial experiments. Please modify the following variables based on your working environment.
+
+<p>
+You may search word <b>'Change'</b> in the script and modify them according to your own environment.
+The other parameters are currently tuned for running the tutorial case and you may make changess to suit your needs.
+
+<pre class="terminal">
+$ vi params.tcsh
+
+    the important variables are described below.
+   # ----------------------------------------
+   set EXPERIMENT_NAME = ....  # main experimental directory
+   set   RUN_IN_PBS = ....     # using PBS scheduler or not ;
+                               # you may need changes at driver scripts 
+			       # (driver_initial_ens.tcsh and driver_dart_advance.tcsh)
+                               # when you use this at other HPC (e.g., 'qsub' at derecho)
+   set  PROJ_NUMBER = ....     # your allocated project ID to submit job at PBS
+
+   set  ROOT_DIR    = ....     # your main work path;
+                               # $BASE_DIR=${ROOT_DIR}/${EXPERIMENT_NAME} 
+   set MPAS_DIR     = ..../MPAS-Model       # MPAS-A PATH
+   set DART_DIR     = ..../DART             # DART PATH
+   set WPS_DIR      = ..../WPS              # WPS PATH
+   # ----------------------------------------
+
+</pre>
+
+<p>
+You might need to set the  <em class="terminal">$WPS_DIR</em> environment variable if you plan to run initial MPAS-A ensemble forecasts from an external dataset. This is because  <em class="terminal">ungrib.exe</em> generates intermediate files that are necessary for creating the initial conditions for MPAS-A.
+
+<p>
+Then, run  <em class="terminal">$setup.csh</em>. This will create an experimental directory for the tutorial cases at  <em class="terminal">$$BASE_DIR</em>.
+
+<pre class="terminal">
+$ ./setup.tcsh params.tcsh
+</pre>	
+
+<p>
+For example, you'll find the following directories, each serving a specific purpose:
+
+<pre class="terminal">
+
+EXP_DIR/  # ${BASE_DIR}/${EXPERIMENT_NAME}
+       ├── extm: directory to download external model data (e.g., GFS, GEFS)
+       ├── scripts: shell scripts for cycling experiments
+       ├── rundir: temporary directory to run actual dart/forecast jobs
+       ├── obs: place to hold observation sequence files
+       ├── init: directory for initial condition files (for regional)
+       ├── output: place to copy experimental data (bkg/anl ensemble, obs diag and log) 
+       ├── template: directory to place template and static files for DART and MPAS-A
+       └── exec: place to copy all MPAS-DART executables
+       
+</pre>
+ </p>
+
+</div>
 
 <!-- ============================================================================== --->
 <div class="subheader" onClick="show('initial-ens')">
-<h3>4.1 Create Initial Global Ensemble</h3>
+<h3>4.2 Create Initial Global Ensemble</h3>
 </div>
 
 <div id="initial-ens" class="subsection">
+<p>
+
+This section is about preparing initial global forecast ensemble.
+<p>
+Users may skip this step for tutorial purposes, since initial condition, and restart files for the first cycle are provided.
+You may delete files at <em class="terminal">init/*</em> and <em class="terminal">output/*</em> if you plan to run initial background ensemble forecast yourself.
 
 <p>
-If you have access to an ensemble of grib files, then in the
-<em class="terminal">models/mpas_atm/shell_scripts</em> directory are:
+First, let's move to <em class="terminal">scripts/</em> and run <em class="terminal">download.tcsh</em> to obtain external grib2 at <b>${EXTM_DIR}</b>.
+This tutorial will download GFS data at 00 UTC on Apr 17, 2019. This 'download.tcsh' is designed to download GFS or GEFS data from AWS S3 or NCAR RDA.</br>
+
+<p>
+It requires 3 arguments:
+<ul>
+<li> $1 : Start date for the data (YYYYMMDDHH format)
+<li> $2 : End date for the data (place the same 'start date' for global application)
+<li> $3 : Path for params.tcsh (determine GFS or GEFS by <em class="terminal">${EXT_DATA_TYPE}</em>)
+</ul>
+
+<p> 
+To download GFS data at 00 UTC on Apr 17, 2019, use the below command: 
 <pre class="terminal">
-driver_initial_ens.csh
-init_mpas_grib.csh
+./download.tcsh 2019041700 2019041700 params.tcsh
+</pre>
+
+<p>
+After execution, you can see the downloaded files at <em class="terminal">${BASE_DIR}/extm/2019041700*</em>
+(* AWS S3 and NCAR RDA may have different naming convention for this GFS grib2 files)
+
+<pre class="terminal">
+$ls -1 extm/2019041700/*
+extm/2019041700/gfs.0p25.2019041700.f000.grib2
+extm/2019041700/ready.txt
+</pre>
+
+<p>
+If you download GEFS ensemble GRIB2 data, the number of doownload ensemble file names will also depend on the <em class="terminal">${ENS_SIZE}</em> variable set in <em class="terminal">params.tcsh</em>.
+
+<p>
+After obtaining the external model data to drive MPAS-A, you can use <em class="terminal">driver_initial_ens.tcsh</em> to create the initial conditions and advance the forecasts. This script will create initial condition files at <em class="terminal">init/</em> and restart files at <em class="terminal">output/</em>. This script will run two main job scripts in sequence. Before doing so, it will either link or copy the required files (executable, namelist template, static files, and others) to <em class="terminal">${RUN_DIR}</em>.
+
+<ol>
+<li><b>prep_initial_ens.tcsh</b>: create initial condition for MPAS-A from external data
+<ul>
+<li> if 'GFS' is employed, run 'init_atmosphere_model' to create IC and then run 'filter' to add perturbations
+<li> 'GFSENS (GEFS)' is employed, run 'init_atmosphere_model' for every member after that, they will be copied to  <em class="terminal">init/</em>
+</ul>
+<li><b>mpas_first_advance.tcsh</b>: run MPAS-A to generate intial BKG ensemble forecasts by using IC files at init/; after completion, the files are stored at output/
+</ol>
+
+<p>
+This  <em class="terminal">driver_initial_ens.tcsh</em> script requires 3 arguments:
+<ul>
+<li> $1 : Start date for the forecast (YYYYMMDDHH format)
+<li> $2 : Forecast length in hours
+<li> $3 : Path for params.tcsh (determine GFS or GEFS by  <em class="terminal">${EXT_DATA_TYPE})</em>
+</ul>
+
+<p>
+To create 336-hour forecasts from 00 UTC on Apr 17, 2019, run the following command: 
+<pre class="terminal">
+./driver_initial_ens.tcsh 2019041700 336 params.csh
+</pre>
+
+<p>
+After the jobs are complete, you should see the following files in the <em class="terminal">init/</em> and <em class="terminal">output/</em> directories
+<pre class="terminal">
+$ ls -1 init/2019041700/*/*.nc # initial condition at ${INIT_DIR}
+init/2019041700/member00/x1.10242.init.nc
+init/2019041700/member01/x1.10242.init.nc
+init/2019041700/member02/x1.10242.init.nc
+init/2019041700/member03/x1.10242.init.nc
+init/2019041700/member04/x1.10242.init.nc
+init/2019041700/member05/x1.10242.init.nc
+init/2019041700/member06/x1.10242.init.nc
+init/2019041700/member07/x1.10242.init.nc
+init/2019041700/member08/x1.10242.init.nc
+init/2019041700/member09/x1.10242.init.nc
+init/2019041700/member10/x1.10242.init.nc
+
+$ ls -1 output/2019050100/*/restart*.nc     # if ${USE_RESTART} = true at 'params.tcsh'
+output/2019050100/member01/restart.2019-05-01_00.00.00.nc
+output/2019050100/member02/restart.2019-05-01_00.00.00.nc
+output/2019050100/member03/restart.2019-05-01_00.00.00.nc
+output/2019050100/member04/restart.2019-05-01_00.00.00.nc
+output/2019050100/member05/restart.2019-05-01_00.00.00.nc
+output/2019050100/member06/restart.2019-05-01_00.00.00.nc
+output/2019050100/member07/restart.2019-05-01_00.00.00.nc
+output/2019050100/member08/restart.2019-05-01_00.00.00.nc
+output/2019050100/member09/restart.2019-05-01_00.00.00.nc
+output/2019050100/member10/restart.2019-05-01_00.00.00.nc
+
+</pre>
+
+<p>
+
+If you are interested, you may see below subsections.
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('initial-ens_supplementary1')">
+<h3>4.2.1 Details for Creating Initial Conditions</h3>
+</div>
+
+<div id="initial-ens_supplementary1" class="subsection">
+<p>
+
+<p>
+If you have access to an ensemble of grib files(e.g., GEFS), then in the
+<em class="terminal">$BASE_DIR/scripts</em> directory are:
+<pre class="terminal">
+driver_initial_ens.tcsh
+prep_initial_ens_ic.tcsh
 </pre>
 </p>
 
 <p>
 which will convert an ensemble of grib files to an ensemble
-of mpas files.
+of initial ensemble MPAS files.
 </p>
 
 <p>
@@ -1160,7 +1339,7 @@ to the analysis, letting them grow with cycles or over forecast times.
 </p>
 
 <p>
-In this case, you need to have two more executables:
+In both cases, you need to have two more executables:
 <pre class="terminal">
 WPS/ungrib.exe
 MPAS/init_atmosphere
@@ -1168,30 +1347,32 @@ MPAS/init_atmosphere
 </p>
 
 <p>
-To download and install WPS, see
+If you are not prepared WPS, you may need to download and install WPS. Please see
 <a href="https://github.com/wrf-model/WPS/">
          https://github.com/wrf-model/WPS/</a> .
- 
+
 <br><br>
-To build MPAS for initialization and for step 2 below, see
+To build MPAS for initialization and for step 2 below, refer to
 <a href="https://www2.mmm.ucar.edu/projects/mpas/tutorial/v8.0/index.html">
 https://www2.mmm.ucar.edu/projects/mpas/tutorial/v8.0/index.html</a> .
 
 <p>
-Let us start with a GFS analysis 
+For example, Let us start with a GFS analysis. You can download GFS analysis from 
 <a href="https://rda.ucar.edu/datasets/ds084.1/">
 https://rda.ucar.edu/datasets/ds084.1/</a>
+
+The below is the procedure to add perturbations to the initial condition file generated by GFS analysis.
+These procedures are included in <em class="terminal">$BASE_DIR/scripts/prep_initial_ens_ic.tcsh</em>.
 
 <ol>
 <li>Run WPS/ungrib.exe over the GFS file in grib format.
    <ul>
-   <li>(Use namelist.wps.global to edit start_date and end_date. No worries about the rest.)
+   <li>(Use namelist.wps to edit start_date and end_date. No worries about the rest.)
    <li> FILE:YYYY-MM-DD_HH
    </ul>
 </li>
 
-<li>Run MPAS/init_atmosphere (three times with config_init_case = 7, 
-   but changing streams.init_atmosphere for the corresponding input/output files.)
+<li>Run MPAS/init_atmosphere (with config_init_case = 7) to create init.nc
    <ul>
    <li> grid.nc, graph.info
    <li> static.nc
@@ -1270,40 +1451,10 @@ https://rda.ucar.edu/datasets/ds084.1/</a>
 
 </ol>
 
-
-<!--
-<pre class="terminal">
-$ add output here
-</pre>
--->
-
-
-<!-- images 
-<img src="workflow.png"/>
--->
+</div>
 
 </div>
 
-
-<!-- ============================================================================== --->
-<div class="subheader" onClick="show('initial-reg')">
-<h3>4.2 Create Regional MPAS Files</h3>
-</div>
-
-<div id="initial-reg" class="subsection">
-
-<p>
-To create a regional MPAS ensemble, the global ensemble produced above should be cut out for 
-the region of interest. To produce a regional file from a global MPAS file (for each member), 
-use creat_region in 
-<a href="https://github.com/MPAS-Dev/MPAS-Limited-Area/">
-https://github.com/MPAS-Dev/MPAS-Limited-Area/ </a> . 
-Instructions can be found in Section 4.1 in the MPAS tutorial 
-<a href="https://www2.mmm.ucar.edu/projects/mpas/tutorial/v8.0/index.html">
-https://www2.mmm.ucar.edu/projects/mpas/tutorial/v8.0/index.html</a> .
-</p>
-
-</div>
 
 <!-- ============================================================================== --->
 <div class="subheader" onClick="show('obs-pre')">
@@ -1321,14 +1472,63 @@ https://docs.dart.ucar.edu/en/latest/observations/obs_converters/README.html</a>
 details.
 </p>
 
+
 <p>
 After converting into DART format, there are some MPAS-specific preprocessing
 that a user may want to do.  This includes operations like discarding obs
 which are outside a regional area, superob-ing very dense obs, increasing 
 obs error near regional borders, etc.  
 The <em class="terminal">mpas_dart_obs_preprocess</em> program has many
-options to do these things.
+options to do these things. Please check the subsection for more details if you are interested.
 </p>
+
+<p>
+In this tutorial, we have included observation sequence files processed from PrepBUFR at the <em class="terminal">tutorial tgz file</em>. Because these data are only processed from the PrepBUFR converter, it is recommended to run additional observation preprocessing before running MPAS-DART experiments.
+
+The script <em class="terminal">run_obs_preprocess.tcsh</em> is intended to create such quality-controlled obs_seq files.
+In this tutorial, we will perform the following preprocessing steps:
+<ul>
+<li> Perform superobbing on aircraft observations using the ~240 km model grid information
+<li> Adjust the quality control (QC) flags for NCEP surface and satellite wind observation types
+<li> Reject some surface observations by checking the elevation difference between the observation and the model background
+</ul>
+
+<p>
+This <em class="terminal">run_obs_preprocess.tcsh</em> requires 4 arguments:
+
+<ul>
+<li> $1 : Start date for running mpas_dart_obs_preprocess (YYYYMMDDHH format)
+<li> $2 : End date for running mpas_dart_obs_preprocess (YYYYMMDDHH format)
+<li> $3 : Processing interval in hour
+<li> $4 : Path for params.tcsh
+</ul>
+
+<p>
+For example, to create the obs_seq files from May 1, 2019 to May 7, 2019, run the following command:
+<pre class="terminal">
+./run_obs_preprocess.tcsh 2019050100 2019050700 6 params.tcsh
+</pre>
+
+<p>
+You should find the processed observation sequence files (with the <b>_after</b> postfix) in the <em class="terminal">${OBS_DIR} </em> directory. These files will be smaller than the original files.
+
+<pre class="terminal">
+$ ls obs/obs_seq201905011* -lh
+-rw-r--r-- 1 junpark ncar 143M Jan 10 16:54 obs/obs_seq2019050112
+-rw-r--r-- 1 junpark ncar  79M Jan 10 17:14 obs/obs_seq2019050112_after
+-rw-r--r-- 1 junpark ncar 114M Jan 10 16:54 obs/obs_seq2019050118
+-rw-r--r-- 1 junpark ncar  53M Jan 10 17:15 obs/obs_seq2019050118_after
+</pre>
+
+<p>
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('obs-pre_supplementary1')">
+<h3>4.3.1 Details for mpas_dart_obs_preprocess</h3>
+</div>
+
+<div id="obs-pre_supplementary1" class="subsection">
+<p>
 
 <p>
 This program allows users to do the following functions:
@@ -1404,6 +1604,7 @@ Example namelist:
 </pre>
 </p>
 
+</div>
 
 </div>
 
@@ -1427,6 +1628,7 @@ Several scripts are provided to do this. The main <i>driver</i>
 script is <em class="terminal">driver_mpas_dart.csh</em>.
 </p>
 
+
 <!-- ============================================================================== --->
 <div class="subheader" onClick="show('driver')">
 <h3>4.4.1 The Driver Script</h3>
@@ -1436,123 +1638,192 @@ script is <em class="terminal">driver_mpas_dart.csh</em>.
 
 
 <p>
-The driver script is the one which is usually submitted to the
-batch system to run a cycling data assimilation experiment.  It assumes
-both MPAS and DART have been compiled with MPI enabled, and that MPI
-is available at runtime.
+The driver script is the one which is usually running to 
+to run a cycling data assimilation experiment by submitting jobs at batch system.
+
+<p>
+Now that we have the initial background forecast ensemble, the observation sequence file, and the required software, we can run the actual data assimilation (DA) cycles. This involves using the <em class="terminal">filter</em> program to perform the EAKF analysis and then advancing the model state with MPAS-A.
+
+<p>
+"The current driver script is configured to run cycling DA for this tutorial, but it was designed to be flexible enough for users to adapt it to their own research.
+
+<p>
+To perform the DART analysis and advance the MPAS-A forecasts through multiple cycles, you can use the <em class="terminal">driver_dart_advance.tcsh</em> script.
+
+<p>
+This script utilizes two main job scripts in sequence:
+<ol>
+<li> <b>assimilate.tcsh</b>: run EAKF analysis using <em class="terminal">filter</em> and update background files with DART analysis using <em class="terminal">update_mpas_state</em>
+<li> <b>mpas_advance.tcsh</b>: run <em class="terminal">atmosphere_model</em> to advance the model state to thenext cycle
+</ol>
+
+<p>
+This <em class="terminal">driver_dart_advance.tcsh</em> requires 4 arguments:
+<ul>
+<li>$1: Start date of DA cycle (YYYYMMDDHH format)
+<li>$2: End date of DA cycle (YYYYMMDDHH format)
+<li>$3: Cycling interval in hours
+<li>$4: Path for <em class="terminal">params.tcsh</em>
+</ul>
+     
+<p>
+To run DA cycles every 6 hour from 00 UTC on May 1, 2019 to 00 UTC on May 2 using DART and MPAS-A, run the following command:
+<pre class="terminal">
+./driver_dart_advance.csh 2019050100 2019050200 6 params.tcsh
+</pre>
+
+<p>
+After successful executions, you may see those files at <em class="terminal">${OUTPUT_DIR}</em>
+
+<pre class="terminal">
+$ ls -1 output/2019050100/member0[1,2]/*.nc
+output/2019050100/member01/restart.2019-05-01_00.00.00.nc   # BKG 01
+output/2019050100/member01/analysis.2019-05-01_00.00.00.nc  # DART ANL 01
+output/2019050100/member01/afterda.2019-05-01_00.00.00.nc   # ANL 01
+output/2019050100/member02/restart.2019-05-01_00.00.00.nc   
+output/2019050100/member02/analysis.2019-05-01_00.00.00.nc
+output/2019050100/member02/afterda.2019-05-01_00.00.00.nc
+
+$ ls -1 output/2019050100
+output/2019050100/input.nml.filter   # filter namelist
+output/2019050100/obs_seq.final      # obs sequence file after DART analysis
+output/2019050100/output_priorinf_mean.nc  # inflation file used for next cycles
+output/2019050100/output_priorinf_sd.nc     
+output/2019050100/member*/
+......
+
+# ls -1 output/lgos/2019050100
+dart_log.nml.filter
+dart_log.out.filter
+filter.2019050100.log
+mpas_advance.e01.log
+mpas_advance.e02.log
+.........
+</pre>
 </p>
 
-
+<p>
 <p>
 Notes:
 <ol>
-<li>  For the general configuration including all the file names, edit setup.csh.
+<li>  For the general configuration including all the file names, edit params.tcsh.
 <li>  For the model configuration, our general policy is that we only edit the parameters that
      affect the I/O stream here and leave all the rest unchanged (ex. physics options). 
      This means that it is the user's responsibility to edit all other namelist parameters 
-     before running this script. One exception is the time info, which will be updated inside 
-     advance_model.csh for each cycle.
-<li>  This script does NOT specify all the options available for the EnKF data assimilation either.
-     For your own complete filter design, you need to edit your input.nml
+     before running this script. If change is required, it may be better to update namelist template 
+     files before you running the exeperiment
+<li> This tutorial script does NOT specify all the options available for the EnKF data assimilation either.
+     For your own complete filter design, you need to edit your input.nml at template
      - at least &filter_nml, &obs_kind_nml, &model_nml, &location_nml and &mpas_vars_nml sections 
      to set up your filter configuration before running this script.
 <li>  For adaptive inflation, we only support the choice of prior adaptive inflation in the state
      space here. For more options, check DART/assimilation_code/modules/assimilation/filter_mod.html.
 <li>  All the logical parameters are case-sensitive. They should be either true or false.
-<li>  All the output files will be locally stored. 
-     For a large ensemble run, check if you have enough disk space before running this script.
-<li>  As of June 2024, regional MPAS-DART cycling (w/ MPAS V8+) is also supported in this script.
+<li>  The current scripts will store background and analysis files.
+     For a large ensemble run, check if you have enough disk space before running this script or cosnider to remove some files after each cycle.
+<li> In future, regional MPAS-DART cycling (w/ MPAS V8+) will be also supported in this script framework.
 </ol>
 </p>
 
 <p>
-All the template files listed below are available in either shell_scripts or data under DART/models/mpas_atm/.
-Required scripts to run this driver:
-<ol>
-<li>  setup.csh                  (for the general configuration of this experiment)
-<li>  namelist.atmosphere        (for mpas)   - a namelist template for mpas.
-<li>  input.nml                  (for filter) - a namelist template for filter. 
-<li>  filter.template.pbs        (for an mpi filter run; with async >= 2)
-<li>  advance_model.template     (for an mpi mpas run; using separate nodes for each ensemble member)
-<li>  advance_model.csh          (for mpas/filter) - a driver script to run mpas forecast at each cycle
-</ol>
+The following subsections describe the actual job scripts and associated template files. Users can check which files need to be modified for their own research. To gain a better understanding, we recommend that you take your time to read these descriptions while you are waiting for the results of the cycled DA.
 </p>
-
-<p>
-Input files to run this script:
-<ol>
-<li>input_state_file_list  - a list of input ensemble netcdf files for DART/filter
-<li>output_state_file_list - a list of output ensemble netcdf files from DART/filter
-<li>RUN_DIR/member#/${mpas_filename}    - the input file listed in input_state_file_list for each member
-<li>OBS_DIR/${obs_seq_in}.${YYYYMMDDHH} - obs sequence files for each analysis cycle (YYYYMMDDHH) 
-     for the entire period.
-</ol>
-</p>
-
-</div>
+</div> 
 
 <!-- ============================================================================== --->
 <div class="subheader" onClick="show('da-run')">
-<h3>4.4.2 Running Filter for Ensemble DA</h3>
+<h3>4.4.2 Running Filter for Ensemble DA </h3>
 </div>
 
 <div id="da-run" class="subsection">
 
+<p>
+The <em class="terminal">assimilate.tcsh</em> script calls DART <b>filter</b> executable to run the DA analysis. This script takes 3 arguments: 
+<ul>
+<li> the analysis date
+<li> the cycling interval hour
+<li> the <em class="terminal">params.tcsh</em>
+</ul>
+<p>
+This shell script conducts the below process:
+
+<ol>
+<li> copy or link the required files to <em class="terminal">filter.${DATE}/</em>
+<li> update the  namelist file <em class="terminal">input.nml</em> and prepare <em class="terminal">input/output_state_file_list (filter_in/out.txt)</em>, then run <em class="terminal">filter</em>
+<li> run <em class="terminal">update_mpas_states</em> to update background ensemble with DART analysis ensemble
+<li> copy the log and output files to <em class="terminal">${OUTPUT_DIR}</em> and clean up temporary files
+</ol>
 
 <p>
-This program is called by the driver script, but the filter configuration should be edited through 
-<em class="terminal">&filter_nml</em> in input.nml in advance. For instance, users should define 
+Before running <em class="terminal">filter</em>, the filter configuration should be edited through 
+<em class="terminal">&filter_nml</em> in <em class="terminal">input.nml</em> in advance (in 2nd step). For instance, users should define 
 <em class="terminal">ens_size</em> for their own ensemble size and the entire <em class="terminal">inf_flavor</em> 
 section for adaptive inflation. Users are expected to review input.nml carefully and ensure that the parameters are
 appropriately set up for their own input datasets and ensemble configuration (such as localization and outlier thresholds).
 </p>
 
 <p>
-A sample input.nml is provided in DART/mpas_atm/data/.
+A sample <em class="terminal">input.nml.template</em> is available at <em class="terminal">${BASE_DIR}/templates/input.nml.template</em>
+</p>
+
+<p>
+Specifically, the below directories and files are related to run filter analysis in this script.
+<ul>
+<li><b>input.nml</b>  - a namelist file for DART/filter
+<li><b>input_state_file_list</b>  - a list of input ensemble netcdf files for DART/filter
+<li><b>output_state_file_list</b> - a list of output ensemble netcdf files from DART/filter
+<li><b>${RUN_DIR}/member#/${mpas_filename}</b> - the input file listed in input_state_file_list for each member
+<li><b>input_priorinf_mean(sd).nc</b>  - inflation files for adaptive inflations
+<li><b>OBS_DIR/${obs_seq_in}${DATE}</b> - obs sequence files for each analysis cycle (DATE) 
+                                          for the entire period.
+                                          for the entire period.
+</ul>
 </p>
 
 </div>
+
 <!-- ============================================================================== --->
 <div class="subheader" onClick="show('updatestates-run')">
-<h3>4.4.3 Running update_mpas_states</h3>
+<h3>4.4.3 Running update_mpas_states (update_mpas_state)</h3>
 </div>
 
 <div id="updatestates-run" class="subsection">
 
 <p>
-This program is called by the driver script.
+As described in the previous subsection, the <em class="terminal">assimilate.tcsh</em> script calls the <em class="terminal">update_mpas_states</em> program after the filter job.
 </p>
 
 <p>
-The filter program updates the state vector (the list of mpas_state_variables in &mpas_var_nml)
-in the analysis file for each ensemble member (listed in ‘filter_out.txt’). 
+The <em class="terminal">filter</em> program updates the state vector (the list of mpas_state_variables in <em class="terminal">&mpas_var_nml</em>)
+in the analysis file for each ensemble member (listed in <em class="terminal">filter_out.txt</em>). 
 </p>
 
 <p>
-To pass the analysis state onto the MPAS model this program overwrites the variables in the 
-prior forecast file (listed in ‘filter_in.txt’). The update_mpas_states program does three things:
-<ul>
-<li>Overwrites the analysis variables (defined in mpas_state_variables) in the prior forecast file (listed in ‘filter_in.txt’).
-<li>Updates edge_wind (‘u’) based on the analysis in uReconstructZonal and uReconstructMeridional variables 
-if update_u_from_reconstruct = .true. and use_u_for_wind = .false. (default).
+To pass the analysis state onto the MPAS model, this program overwrites the variables in the 
+prior forecast file (listed in <em class="terminal">filter_in.txt</em>). The <em class="terminal">update_mpas_states</em> program does three things:
 <ol>
+<li>Overwrites the analysis variables (defined in mpas_state_variables) in the prior forecast file (list	ed in <em class="terminal">filter_in.txt</em>).
+<li>Updates (<b>edge_wind (u)</b> based on the analysis in <b>uReconstructZonal</b> and <b>uReconstructMeridional</b> variables 
+if <em class="terminal">update_u_from_reconstruct = .true.</em> and <em class="terminal">use_u_for_wind = .false. </em> (default).
+<ul>
+<p>
 Notes:
-<li>if use_increments_for_u_update = .true. (default), edge_wind (‘u’) will be updated 
-from the analysis increments in uReconstructZonal and uReconstructMeridional, meaning that ‘u’ will be updated incrementally. 
-If use_increments_for_u_update = .false., ‘u’ will be recomputed from the uReconstructZonal 
-and uReconstructMeridional analysis values, meaning that the whole value of ‘u’ will be replaced by a new value. 
-<li>If ‘u’ is included in the state vector (e.g., mpas_state_variables), ‘u’ was already directly 
+<li>if <em class="terminal">use_increments_for_u_update = .true.</em> (default), <b>edge_wind (u)</b> will be updated 
+from the analysis increments in <b>uReconstructZonal</b> and <b>uReconstructMeridional</b>, meaning that <b>u</b> will be updated incrementally. 
+If <em class="terminal">use_increments_for_u_update = .false.</em>, <b>u</b> will be recomputed from the <b>uReconstructZonal</b> 
+and <b>uReconstructMeridional</b> analysis values, meaning that the whole value of <b>u</b> will be replaced by a new value. 
+<li>If <b>u</b> is included in the state vector (e.g., mpas_state_variables), <b>u</b> was already directly 
 updated by filter (e.g., through linear regression), and updating edge winds is not required.
-</ol>
+<p>
+</ul>
 <li>Clamps out-of-range data values to the bounds for each variable listed in the 
 namelist <em class="terminal">mpas_state_bounds</em> in <em class="terminal">&amp;mpas_vars_nml</em>.
-</ul>
-
+</ol>
 
 <p>
 The namelist associated with <em class="terminal">update_mpas_states</em> is:
 
-<pre>
+<pre class="terminal">
 &amp;update_mpas_states_nml
   update_input_file_list  = 'filter_out.txt'
   update_output_file_list = 'filter_in.txt'
@@ -1568,91 +1839,44 @@ from filter (e.g., output_state_file_list).
 
 <p>
 For cycling, the output file list (update_output_file_list) should be the same 
-as input_state_file_list in &filter_nml.
+as input_state_file_list in <em class="terminal">&filter_nml</em>.
 </p>
 
 <p>
 These file lists can contain all the ensemble files, or a single ensemble member.
-The update_mpas_states program can run for all ensemble members (having all the 
+The <em class="terminal">update_mpas_states</em> program can run for all ensemble members (having all the 
 ensemble files in the file lists). 
-But because it is a serial program, this program can be separately called for 
-each member (with the file list containing the particular member only). 
+Since it is a serial program, this program can be separately called for 
+each member (with the file list containing the particular member only) depending on the users' choices. 
 </p>
 
 </div>
 
-
-<!-- ============================================================================== --->
-<div class="subheader" onClick="show('updatebc-run')">
-<h3>4.4.4 Running update_bc for Regional Models</h3>
-</div>
-
-<div id="updatebc-run" class="subsection">
-
-<p>
-This program is called by the driver script if running a regional case.
-</p>
-
-<p>
-In regional cycling <em class="terminal">update_bc</em> should be called to 
-update the lateral boundary condition (lbc) file at the analysis time for each 
-ensemble member right after <em class="terminal">update_mpas_states</em> and 
-before running the regional model (through <em class="terminal">advance_model.csh</em>).
-</p>
-
-<p>
-The namelist associated with <em class="terminal">update_bc</em> is:
-
-<pre>
-&amp;update_bc_nml
-  update_analysis_file_list = 'filter_out.txt'
-  update_boundary_file_list = 'boundary_inout.txt'
-  debug                     = .false.
-  /
-</pre>
-</p>
-
-<p>
-The input of <em class="terminal">update_bc</em> ('filter_out.txt') should be the same 
-as the one for update_input_file_list in &amp;update_mpas_states_nml. 
-'boundary_inout.txt' contains the lbc file at the analysis time. 
-Since <em class="terminal">update_bc</em> is a serial program (like <em class="terminal">update_mpas_states</em>), 
-it is recommended to run it for each ensemble member (meaning that a single lbc file 
-for the member is listed in 'boundary_inout.txt'). 
-
-</div>
 
 
 <!-- ============================================================================== --->
 <div class="subheader" onClick="show('advance-run')">
-<h3>4.4.5 Advancing the ensemble of MPAS Models</h3>
+<h3>4.4.4 Advancing the ensemble of MPAS Models</h3>
 </div>
 
 <div id="advance-run" class="subsection">
 
 <p>
-The <em class="terminal">advance_model.csh</em> script runs the MPAS model
-for each of the ensemble members to advance the model state from the current
-time to the next assimilation time.
+The <em class="terminal">mpas_advance.tcsh</em> script runs the MPAS-A model 
+for each ensemble member to advance the model state from the current time 
+to the next assimilation time.
 </p>
 
 <p>
-This program is called by the driver script.
-</p>
-
-
-<p>
-This script is called by advance_model.template in driver_mpas_dart.csh
+This script calls <em class="terminal">atmosphere_model</em> program in <em class="terminal">driver_mpas_dart.tcsh</em>
 after the analysis step is done at each cycle.  It performs the following:
 
 <ol>
-<li>Creates a temporary directory to run an MPAS-A realization (see options)
+<li>Creates a temporary directory to run an MPAS-A realization at <em class="terminal">${RUN_DIR}/memberXX</em>
 <li>Gets all the files necessary for the model run in the member directory.
-<li>Updates an MPAS namelist from a template with new dates.
-<li>Runs the MPAS-A model in a restart mode until the target time is reached.
-<li>Regional MPAS is also supported, if chosen.
-<li>Checks for incomplete runs.
-<li>Saves horizontal winds if save_wind = true (for extended forecasts later).
+<li>Updates an MPAS namelist <em class="terminal">namelist.atmosphere</em> from a template with new dates and flag options.
+<li>Runs the MPAS-A model <em class="terminal">atmosphere_model</em> in a restart mode until the target time is reached.
+<li>Checks for incomplete runs
 </ol>
 
 </p>
@@ -1660,23 +1884,24 @@ after the analysis step is done at each cycle.  It performs the following:
 <p>
 Notes:
 <ol>
-<li>This script supports MPAS V7+ and the Manhattan release of DART. 
-          It is NOT backward compatible for older versions.
-<li>MPAS is run in a restart mode during the cycles, which means
-          both input and output of the model run are restart files.
-          This also means that one should not delete the member directory as
-          one needs to keep the restart file for each member during the cycle.
-<li>The input analysis file should be provided through update_mpas_states 
+<li>This script is tested with the MPAS v8.2.0 public release and the DART v11.8.5 public release. It may <b>NOT</b> be backward compatible with older versions.
+<li>Support for Regional MPAS will also be added soon.
+<li>MPAS is run in a restart mode (<em class="terminal">USE_RESTART = true </em> in default) during the cycles , which means both input and output of the model run are restart files. Users might consider using 'da_state' streams.
+<li>The input analysis file should be provided through <em class="terminal">update_mpas_states</em> 
           (which is supposed to be run before running this script).
-<li>For the required data to run this script, check the section of 'dependencies'.
-<li>Anything specific to the experiment is supposed to be provided in ${CENTRALDIR}/.
+<li>Anything specific to the experiment is supposed to be provided in <em class="terminal">${TEMPLATE_DIR}</em>.
 </ol>
 
 </p>
 
 <p>
-The script takes 2 arguments, the ensemble member number and the maximum
-number of ensemble members.
+The script takes 4 arguments:
+<ul>
+<li> the ensemble member number
+<li> the date
+<li> the forecast hour
+<li> the <em class="terminal">params.tcsh</em>.
+</ul>
 </p>
 
 
@@ -1684,6 +1909,7 @@ number of ensemble members.
 
 </div>
 
+</div>
 </div>
 
 
@@ -1703,6 +1929,70 @@ See the DART documentation here:
 https://docs.dart.ucar.edu/en/latest/guide/checking-your-assimilation.html</a>
 for more details.
 </p>
+
+<p>
+For this tutorial, the <em class="terminal">run_obs_diag.tcsh</em> can be employed to create diagnostics netCDF file for each cycle. The <em class="terminal">ob_diag</em> program is a generic executable to compute observation-space diagnostics from ASCII obs_seq file. This will create a netCDF file using the <em class="terminal">obs_seq.final</em> file (located at <em class="terminal">${OUTPUT_DIR}</em>), which is the output of the filter job. 
+The shell script is designed to compute diagnostics for five preselected domains (GLOBAL, NH, SH, TR, and CONUS).
+
+<p>
+This <em class="terminal">run_obs_diag.tcsh</em> requires 4 arguments:
+
+<ol>
+<li> $1: Start date to run ob_diag (YYYYMMDDHH format)
+<li> $2: End date to run ob_diag  (YYYYMMDDHH format)
+<li> $3: Processing interval in hours
+<li> $4: Path for params.tcsh
+</ol>
+
+<p>
+To create netCDF OBS diagnostics files from May 1, 2019 to May 2, 2019, use the following command:
+<pre class="terminal">
+./run_obs_diag.tcsh 2019050100 2019050200 6 params.tcsh
+</pre>
+
+<p>
+You may see netCDF files (e.g., <em class="terminal">${OUTPUT_DIR}/${DATE}/obs_diag_${DATE}.nc</em>). This can be utilized for analysis.
+<pre class="terminal">
+$ ls output/201905*/obs_diag*.nc
+output/2019050100/obs_diag_2019050100.nc  output/2019050118/obs_diag_2019050118.nc
+output/2019050106/obs_diag_2019050106.nc  output/2019050200/obs_diag_2019050200.nc
+output/2019050112/obs_diag_2019050112.nc  
+</pre>
+
+<p>
+For example, the below command can show the observation-space diagnostics on SFC_LAND_ALTIMETER (pressure) at 00 UTC on May 2, 2019 (5th cycle):
+
+<pre class="terminal">
+$ ncdump -v LAND_SFC_ALTIMETER_analy,LAND_SFC_ALTIMETER_guess output/2019050200/obs_diag_2019050200.nc
+netcdf obs_diag_2019050200 {
+dimensions:
+	time = UNLIMITED ; // (1 currently)
+	bounds = 2 ;
+	copy = 23 ;
+	obstypes = 118 ;
+	region = 5 ; # GLOBAL, NH, SH, TR, and COUS
+         .........
+variables:
+         .........
+	float LAND_SFC_ALTIMETER_guess(time, copy, surface, region) ;
+	float LAND_SFC_ALTIMETER_analy(time, copy, surface, region) ;
+         .........
+data:
+
+ LAND_SFC_ALTIMETER_guess =
+     .............
+  2.588519, 2.587369, 3.548663, 1.57491, 1.987852, # RMSI BKG (GLOBAL, NH, SH,TR, and CONUS)
+  -0.0414397, 0.2682366, -0.9845654, -0.5949118, -0.5269321, # BIAS BKG
+     .............
+
+ LAND_SFC_ALTIMETER_analy =
+     .............
+  1.197396, 1.162324, 1.294496, 1.26149, 1.205597, # RMSI ANL
+  -0.1500837, -0.06816623, -0.290615, -0.3772454, -0.3234949, # RMSI ANL
+     .............
+}
+</pre>
+
 
 </div>
 
@@ -1738,8 +2028,109 @@ information about Data Assimilation theory.
 Also, for more details or any questions, please contact Soyoung Ha (syha@ucar.edu) or dart@ucar.edu.
 </p>
 
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('compilation_help')">
+<h3>6.1 Resources for Compilations of Software</h3>
+</div>
+
+<div id="compilation_help" class="subsection">
+ <p>
+ You may refer to below documentations when compiling softwares for this tutorial.
+ <p>
+ 1) DART: <a href="https://docs.dart.ucar.edu/en/latest/guide/compiling-dart.html" target="_blank">
+https://docs.dart.ucar.edu/en/latest/guide/compiling-dart.html</a>
+ <p>
+ 2) MPAS-A: <a href="https://www2.mmm.ucar.edu/projects/mpas/mpas_atmosphere_users_guide_8.2.0.pdf" target="_blank">
+	 https://www2.mmm.ucar.edu/projects/mpas/mpas_atmosphere_users_guide_8.2.0.pdf (see chapter #3) </a>
+ <p>
+ 3) WRF & WPS: <a href="https://www2.mmm.ucar.edu/wrf/users/wrf_users_guide/build/html/compiling.html" target="_blank">
+	 https://www2.mmm.ucar.edu/wrf/users/wrf_users_guide/build/html/compiling.html</a>
+ </p>
 
 </div>
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('initial-reg')">
+<h3>6.2 Create Regional MPAS Files</h3>
+</div>
+
+<div id="initial-reg" class="subsection">
+
+<p>
+To create a regional MPAS ensemble, the global ensemble produced above should be cut out for 
+the region of interest. To produce a regional file from a global MPAS file (for each member), 
+use creat_region in 
+<a href="https://github.com/MPAS-Dev/MPAS-Limited-Area/">
+https://github.com/MPAS-Dev/MPAS-Limited-Area/ </a> . 
+Instructions can be found in Section 4.1 in the MPAS tutorial 
+<a href="https://www2.mmm.ucar.edu/projects/mpas/tutorial/v8.0/index.html">
+https://www2.mmm.ucar.edu/projects/mpas/tutorial/v8.0/index.html</a> .
+
+<p>
+<b> We will update this tutorial page after the regional DA capabilities are fully merged into the official DART repository. </b>
+</p>
+
+</div>
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('updatebc-run')">
+<h3>6.3. Running update_bc for Regional Models</h3>
+</div>
+
+<div id="updatebc-run" class="subsection">
+
+<p>
+This program needs to be called if running a regional case. This may be not work with the current public DART release.
+</p>
+
+<p>
+In regional cycling <em class="terminal">update_bc</em> should be called to 
+update the lateral boundary condition (lbc) file at the analysis time for each 
+ensemble member right after <em class="terminal">update_mpas_states</em> and 
+before running the regional model (through <em class="terminal">advance_model.csh</em>).
+</p>
+
+<p>
+The namelist associated with <em class="terminal">update_bc</em> is:
+
+<pre>
+&amp;update_bc_nml
+  update_analysis_file_list = 'filter_out.txt'
+  update_boundary_file_list = 'boundary_inout.txt'
+  debug                     = .false.
+  /
+</pre>
+</p>
+
+<p>
+The input of <em class="terminal">update_bc</em> ('filter_out.txt') should be the same 
+as the one for update_input_file_list in &amp;update_mpas_states_nml. 
+'boundary_inout.txt' contains the lbc file at the analysis time. 
+Since <em class="terminal">update_bc</em> is a serial program (like <em class="terminal">update_mpas_states</em>), 
+it is recommended to run it for each ensemble member (meaning that a single lbc file 
+for the member is listed in 'boundary_inout.txt'). 
+
+</div>
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('ubuntu_example')">
+<h3>6.3 Ubuntu Environment for MPAS-DART Tutorial  </h3>
+</div>
+
+<div id="ubuntu_example" class="subsection">
+ <p>
+ This tutorial material was tested with local laptop using Ubuntu. The machine is Dell G5 5515 Laptop with Ryzen 5 5600H core with 24 GB memory.
+ You may need to install those libaries if you are not prepared those libraries.
+ <p>
+ 1) hdf5 and netCDF: 
+ <p>
+ 2) mpi library
+ <p>
+ 3) other tools
+ </p>
+
+</div>
+
 
 </div>
 
