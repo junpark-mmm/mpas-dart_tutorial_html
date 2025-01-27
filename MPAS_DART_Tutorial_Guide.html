@@ -2115,8 +2115,36 @@ for the member is listed in 'boundary_inout.txt').
 </div>
 
 <!-- ============================================================================== --->
+<div class="subheader" onClick="show('global_vr_mesh')">
+<h3>6.4 Running glbal MPAS-DART with the variable resolution mesh</h3>
+</div>
+
+<div id="global_vr_mesh" class="subsection">
+ <p>
+ This tutorial material was successfully tested with variable resolution global mesh (e.g., 240-48km, 120-30km, ....).
+ If you have enough resources to run these variable resolution mesh, you may try to run by referencing below steps
+ <p>
+ <ol>
+ <li> place your variable resolution 'static' mesh file onto </em class="terminal">${BASE_DIR}/template</em>. 
+  You can obtain the files at <a href="https://mpas-dev.github.io/atmosphere/atmosphere_meshes.html">
+ https://mpas-dev.github.io/atmosphere/atmosphere_meshes.html</a>
+ <li> change the below variables depending on your experimental setup (e.g., 240-48km)
+ <pre class="terminal">
+  set    MPAS_GRID = x5.30210     # All grid parameters will be changed based on this.
+  set     DT_MPAS  = 120    	# timestep for MPAS
+        .....
+  set  USE_LEN_DISP = true       # true  :        add 'config_len_disp' at namelist.atmosphere
+  set  LEN_DISP = 48000         # Finest scale in mesh (unit: meter)
+ </pre>
+ <li> start to create initial background forecasts and then try cycled DA
+ </ol>
+
+</div>
+
+
+<!-- ============================================================================== --->
 <div class="subheader" onClick="show('ubuntu_example')">
-<h3>6.3 Ubuntu Environment for MPAS-DART Tutorial  </h3>
+<h3>6.5 Ubuntu Environment for MPAS-DART Tutorial  </h3>
 </div>
 
 <div id="ubuntu_example" class="subsection">
@@ -2136,13 +2164,38 @@ https://downloads.unidata.ucar.edu/netcdf/</a>
  </ol>
 
  <p>
- if your machine does not enough memory, you may consider below solutions.
+ if your machine does not have enough memory, you may consider below solutions.
 <ol>
 <li>reduce the total number of ensemble members
 <li>utilze the low resolution meshes such as 384-km or 480-km instead of using ~240 km grid.
  You can obtain grid/static file for those at <a href="https://mpas-dev.github.io/atmosphere/atmosphere_meshes.html">
  https://mpas-dev.github.io/atmosphere/atmosphere_meshes.html</a>
 </ol>
+
+</div>
+
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('using_da_state')">
+<h3>6.6 Using 'da_state' stream, not 'restart' file </h3>
+</div>
+
+<div id="using_da_state" class="subsection">
+ <p>
+ This tutorial material was also tested with the MPAS outputs from 'da_state' from <em class="terminal">streams.atmosphere</em>. This capability is available after the public MPAS v8.2.0 relase and it is intended to reduce the size of MPAS outputs for DA. It basically only output variables related to the DA step and the other static data which is required to run the model are readed from the file placed at 'invariant' stream of <em class="terminal">streams.atmosphere</em>. For example, the initial condition file <em class="terminal">init.nc</em> can be employed for this role.
+
+ <p>
+ For example, you may see those file size difference for ~240 km global domain.
+
+ <pre class="terminal">
+ # restart
+ -rw-r--r-- 1 junpark ncar 224M Nov 27 16:56 output/2019050100/member01/restart.2019-05-01_00.00.00.nc
+ # da_state
+ -rw-r--r-- 1 junpark ncar  52M Dec  7 14:19 output/2019050100/member01/mpasout.2019-05-01_00.00.00.nc
+ </pre>
+
+ <p>
+ To try this capability, you may need to use newer <em class="terminal">streams.atmosphere</em> template and need to change <em class="terminal">$USE_RESTART</em> as <b>false</b> at <em class="terminal">params.tcsh</em>.
+ We will upload the tutorial data file for using 'da_state' in MPAS-DART soon. The tutorial file size will be reduced to 1.2GB from 2.1 GB for this case. 
 
 </div>
 
