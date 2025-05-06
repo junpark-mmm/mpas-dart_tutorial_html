@@ -162,7 +162,7 @@ the repository directly on the command-line.
 <b>
 Normally the main DART repository should be used when starting a data assimilation project.
 However, there is updated code for Regional MPAS and Radar obs support which
-is not available yet in the main DART repository.This tutorial will guide you through downloading DART version 11.8.5 (released November 2024) from the main repository.
+is not available yet in the main DART repository. This tutorial will guide you through downloading DART version 11.10.9 (released in May 2025) from the main repository.
 </b>
 </p>
 
@@ -171,7 +171,7 @@ From within your <em class="terminal">${HOME}</em> directory run:
 </p>
 
 <pre class="terminal">
-$ git clone -b v11.8.5 https://github.com/NCAR/DART.git  DART
+$ git clone -b v11.10.9 https://github.com/NCAR/DART.git  DART
 </pre>
 
 <p>
@@ -215,7 +215,7 @@ drwxr-xr-x  2 junpark ncar  4096 Jan 10 10:50 theory
 </pre>
 
 <p>
-That's it! We now have a copy of the v11.8.5 release of the DART source code.
+That's it! We now have a copy of the v11.10.9 release of the DART source code.
 The future DART can also be supported unless there are significant updates.
 </p>
 
@@ -1118,7 +1118,7 @@ an MPAS/DART cycling experiment.
 
 <div id="prep_exp" class="subsection">
 <p>
-This global MPAS-DART tutorial was tested with a ~240 km global domain (nCells=10,242) using MPAS-A v8.2.0 and DART v11.8.5. The tutorial uses 14-day forecasts with 10 ensemble members for the first cycle, initialized at 00 UTC on Apr 17, 2019. It also includes observation sequence files for 9 days to enable users to conduct cycling experiments.
+This global MPAS-DART tutorial was tested with a ~240 km global domain (nCells=10,242) using MPAS-A v8.2.0 and DART v11.10.9. The tutorial uses 14-day forecasts with 10 ensemble members for the first cycle, initialized at 00 UTC on Apr 17, 2019. It also includes observation sequence files for 9 days to enable users to conduct cycling experiments.
 
 <p>
 To clone the tutorial scripts from <a href="https://github.com/junpark-mmm/mpas-dart_tutorial_scripts" target="_blank">github.com/junpark-mmm/mpas-dart_tutorial_scripts</a>, use the following command:
@@ -1884,9 +1884,9 @@ after the analysis step is done at each cycle.  It performs the following:
 <p>
 Notes:
 <ol>
-<li>This script is tested with the MPAS v8.2.0 public release and the DART v11.8.5 public release. It may <b>NOT</b> be backward compatible with older versions.
+<li>This script is tested with the MPAS v8.2.0 public release and the DART v11.8.5 (Nov 2024) and v11.10.9 (May 2025) public release. It may <b>NOT</b> have an backward compatibility issues with older versions.
 <li>Support for Regional MPAS will also be added soon.
-<li>MPAS is run in a restart mode (<em class="terminal">USE_RESTART = true </em> in default) during the cycles , which means both input and output of the model run are restart files. Users might consider using 'da_state' streams.
+<li>MPAS is run in a restart mode (<em class="terminal">USE_RESTART = true </em> in default) during the cycles , which means both input and output of the model run are restart files. Users might consider using 'da_state' streams. If you are interested in, please check subsection at 6.6.
 <li>The input analysis file should be provided through <em class="terminal">update_mpas_states</em> 
           (which is supposed to be run before running this script).
 <li>Anything specific to the experiment is supposed to be provided in <em class="terminal">${TEMPLATE_DIR}</em>.
@@ -1970,7 +1970,7 @@ dimensions:
 	bounds = 2 ;
 	copy = 23 ;
 	obstypes = 118 ;
-	region = 5 ; # GLOBAL, NH, SH, TR, and COUS
+	region = 5 ; # GLOBAL, NH, SH, TR, and CONUS
          .........
 variables:
          .........
@@ -2125,7 +2125,7 @@ for the member is listed in 'boundary_inout.txt').
  If you have enough resources to run these variable resolution mesh, you may try to run by referencing below steps
  <p>
  <ol>
- <li> place your variable resolution 'static' mesh file onto </em class="terminal">${BASE_DIR}/template</em>. 
+ <li> place your variable resolution 'static' mesh file onto <em class="terminal">${BASE_DIR}/template</em>. 
   You can obtain the files at <a href="https://mpas-dev.github.io/atmosphere/atmosphere_meshes.html">
  https://mpas-dev.github.io/atmosphere/atmosphere_meshes.html</a>
  <li> change the below variables depending on your experimental setup (e.g., 240-48km)
@@ -2181,7 +2181,7 @@ https://downloads.unidata.ucar.edu/netcdf/</a>
 
 <div id="using_da_state" class="subsection">
  <p>
- This tutorial material was also tested with the MPAS outputs from 'da_state' from <em class="terminal">streams.atmosphere</em>. This capability is available after the public MPAS v8.2.0 relase and it is intended to reduce the size of MPAS outputs for DA. It basically only output variables related to the DA step and the other static data which is required to run the model are readed from the file placed at 'invariant' stream of <em class="terminal">streams.atmosphere</em>. For example, the initial condition file <em class="terminal">init.nc</em> can be employed for this role.
+ This tutorial material was also tested with the MPAS outputs using 'da_state' from <em class="terminal">streams.atmosphere</em>. This capability is available after the public MPAS v8.2.0 relase and it is intended to reduce the size of MPAS outputs for DA. It basically only output variables related to the DA step and the other static data which is required to run the model are readed from the file placed at 'invariant' stream of <em class="terminal">streams.atmosphere</em>. For example, the initial condition file <em class="terminal">init.nc</em> can be employed for this role.
 
  <p>
  For example, you may see those file size difference for ~240 km global domain.
@@ -2194,8 +2194,8 @@ https://downloads.unidata.ucar.edu/netcdf/</a>
  </pre>
 
  <p>
- To try this capability, you may need to use newer <em class="terminal">streams.atmosphere</em> template and need to change <em class="terminal">$USE_RESTART</em> as <b>false</b> at <em class="terminal">params.tcsh</em>.
- We will upload the tutorial data file for using 'da_state' in MPAS-DART soon. The tutorial file size will be reduced to 1.2GB from 2.1 GB for this case. 
+ To try this capability, you may need to use newer <em class="terminal">streams.atmosphere</em> template and need to change <em class="terminal">$USE_RESTART</em> as <b>false</b> at <em class="terminal">params.tcsh</em>. You can obtain this from <a href="https://drive.google.com/file/d/1bFN7tlSNrfn4XisMKzNoMMPkCJ4_Z-r9">
+ this google drive link</a> at this time. Please update your <em class="terminal">setup.tcsh</em> to use ths file (at line #78)
 
 </div>
 
