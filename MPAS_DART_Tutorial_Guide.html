@@ -1113,23 +1113,24 @@ an MPAS/DART cycling experiment.
 
 <!-- ============================================================================== --->
 <div class="subheader" onClick="show('prep_exp')">
-<h3>4.1 Obtaining Test Data and Preparing Experiment</h3>
+<h3>4.1 Obtaining Test Data and Preparing Experiment (Regional) </h3>
 </div>
 
 <div id="prep_exp" class="subsection">
 <p>
-This global MPAS-DART tutorial was tested with a ~240 km global domain (nCells=10,242) using MPAS-A v8.2.0 and DART v11.8.5. The tutorial uses 14-day forecasts with 10 ensemble members for the first cycle, initialized at 00 UTC on Apr 17, 2019. It also includes observation sequence files for 9 days to enable users to conduct cycling experiments.
+This regional MPAS-DART tutorial was tested with a ~60 km regional domain (nCells=9,339) using MPAS-A v8.2.0 and DART v11.8.5. The tutorial uses 1-day forecasts with 10 ensemble members for the first cycle, initialized at 00 UTC on May 03, 2024. It also includes observation sequence files for 3 days to enable users to try cycling experiments.
 
 <p>
-To clone the tutorial scripts from <a href="https://github.com/junpark-mmm/mpas-dart_tutorial_scripts" target="_blank">github.com/junpark-mmm/mpas-dart_tutorial_scripts</a>, use the following command:
+To clone the tutorial scripts for regional MPAS-DART from <a href="https://github.com/junpark-mmm/mpas-dart_tutorial_scripts" target="_blank">github.com/junpark-mmm/mpas-dart_tutorial_scripts</a>, use the following command:
 <p>
 
 <pre class="terminal">
-   git clone https://github.com/junpark-mmm/mpas-dart_tutorial_srcripts.git
+   git clone -b Regional_2025 https://github.com/junpark-mmm/mpas-dart_tutorial_srcripts.git
 </pre>
 
 <p>
-These scripts will be merged into the official DART repository in the future. After the merge, you can obtain and run them directly from the <em class="terminal">DART/models/mpas_atm/shell_scripts</em> directory.
+Although the scripts for regional MPAS-DART are separated at this time, the scripts will be merged in a unified branch to support both global and regional MPAS-DART applications.
+In addition, these scripts will be merged into the official DART repository in the future. After the merge, you can obtain and run them directly from the <em class="terminal">DART/models/mpas_atm/shell_scripts</em> directory.
 <p>
 
 <p>
@@ -1139,7 +1140,7 @@ This includes:
 <ul>
 <li>initial condition files
 <li>10-member intial background MPAS-A forecast ensemble
-<li>observation sequence files for 9 days
+<li>observation sequence files for 3 days
 <li>template and static data
 </ul>
 
@@ -1152,6 +1153,7 @@ First, you need to modify <em class="terminal">params.tcsh</em> to prepare tutor
 
 <p>
 You may search word <b>'Change'</b> in the script and modify them according to your own environment.
+In the case of regional MPAS-DART, you may also consider two-three variables below w.c.t the Global MPAS-DART
 The other parameters are currently tuned for running the tutorial case and you may make changess to suit your needs.
 
 <pre class="terminal">
@@ -1171,12 +1173,17 @@ $ vi params.tcsh
    set MPAS_DIR     = ..../MPAS-Model       # MPAS-A PATH
    set DART_DIR     = ..../DART             # DART PATH
    set WPS_DIR      = ..../WPS              # WPS PATH
+               ....................
+   set USE_REGIONAL = true                  # true: use Regional MPAS-A
+                                            # false: use Global MPAS-A
+   set LBC_VARS     = "lbc_qv, lbc_theta, lbc_rho, lbc_u" #LBC variables to be updated in update_bc
+               ....................
    # ----------------------------------------
 
 </pre>
 
 <p>
-You might need to set the  <em class="terminal">$WPS_DIR</em> environment variable if you plan to run initial MPAS-A ensemble forecasts from an external dataset. This is because  <em class="terminal">ungrib.exe</em> generates intermediate files that are necessary for creating the initial conditions for MPAS-A.
+You need to set the  <em class="terminal">$WPS_DIR</em> environment variable in the case of regional MPAS-DART since it needs to create LBCs from an external dataset. This is because  <em class="terminal">ungrib.exe</em> generates intermediate files that are necessary for creating the initial conditions for MPAS-A.
 
 <p>
 Then, run  <em class="terminal">setup.csh</em>. This will create an experimental directory for the tutorial cases at  <em class="terminal">$BASE_DIR</em>.
@@ -1207,20 +1214,18 @@ EXP_DIR/  # ${BASE_DIR}/${EXPERIMENT_NAME}
 
 <!-- ============================================================================== --->
 <div class="subheader" onClick="show('initial-ens')">
-<h3>4.2 Create Initial Global Ensemble</h3>
+<h3>4.2 Create Initial Regional Ensemble</h3>
 </div>
 
 <div id="initial-ens" class="subsection">
 <p>
 
-This section is about preparing initial global forecast ensemble.
+This section is about preparing the initial regional forecast ensemble.
 <p>
-Users may skip this step for tutorial purposes, since initial condition, and restart files for the first cycle are provided.
-You may delete files at <em class="terminal">init/*</em> and <em class="terminal">output/*</em> if you plan to run initial background ensemble forecast yourself.
-
+Unlike the global MPAS-DART experiment which can be initialized with a single external data with GFS (after adding perturbations), regional MPAS-DART experiment needs to be provided with a set of external data because of lateral boundary condition.
 <p>
 First, let's move to <em class="terminal">scripts/</em> and run <em class="terminal">download.tcsh</em> to obtain external grib2 at <b>${EXTM_DIR}</b>.
-This tutorial will download GFS data at 00 UTC on Apr 17, 2019. This 'download.tcsh' is designed to download GFS or GEFS data from AWS S3 or NCAR RDA.</br>
+This tutorial will download GEFS analysis data starting from May 03 to May 07, 2024. This 'download.tcsh' is designed to download GFS or GEFS data from AWS S3 or NCAR RDA.</br>
 
 <p>
 It requires 3 arguments:
@@ -1231,34 +1236,43 @@ It requires 3 arguments:
 </ul>
 
 <p> 
-To download GFS data at 00 UTC on Apr 17, 2019, use the below command: 
+To download GEFS analysis time data from 00 UTC on May 03, 2019 for 4 days, use the below command: 
 <pre class="terminal">
-./download.tcsh 2019041700 2019041700 params.tcsh
+./download.tcsh 2024050300 2024050700 params.tcsh
 </pre>
 
 <p>
-After execution, you can see the downloaded files at <em class="terminal">${BASE_DIR}/extm/2019041700*</em>
-(* AWS S3 and NCAR RDA may have different naming convention for this GFS grib2 files)
+This will download GEFS data for this period with 6-hour intervals. The number of ensemble will depends on <em class="terminal">$ENS_SIZE</em> at <em class="terminal">params.tcsh</em>.
+Please note that GEFS ensemble at AWS S3 consists of 30 members.
+
+After execution, you can see the downloaded files at <em class="terminal">${BASE_DIR}/extm/</em>
 
 <pre class="terminal">
-$ls -1 extm/2019041700/*
-extm/2019041700/gfs.0p25.2019041700.f000.grib2
-extm/2019041700/ready.txt
+$ls -1 extm/*/2024050300/gep*
+extm/01/2024050300/gep01.t00z.pgrb2.0p50.f000
+extm/02/2024050300/gep02.t00z.pgrb2.0p50.f000
+extm/03/2024050300/gep03.t00z.pgrb2.0p50.f000
+extm/04/2024050300/gep04.t00z.pgrb2.0p50.f000
+extm/05/2024050300/gep05.t00z.pgrb2.0p50.f000
+extm/06/2024050300/gep06.t00z.pgrb2.0p50.f000
+extm/07/2024050300/gep07.t00z.pgrb2.0p50.f000
+extm/08/2024050300/gep08.t00z.pgrb2.0p50.f000
+extm/09/2024050300/gep09.t00z.pgrb2.0p50.f000
+extm/10/2024050300/gep10.t00z.pgrb2.0p50.f000
 </pre>
+<p>
+This means that you have 10 members of GEFS ensemble valid at 00 UTC on May 3, 2024.
 
 <p>
-If you download GEFS ensemble GRIB2 data, the number of doownload ensemble file names will also depend on the <em class="terminal">${ENS_SIZE}</em> variable set in <em class="terminal">params.tcsh</em>.
-
-<p>
-After obtaining the external model data to drive MPAS-A, you can use <em class="terminal">driver_initial_ens.tcsh</em> to create the initial conditions and advance the forecasts. This script will create initial condition files at <em class="terminal">init/</em> and restart files at <em class="terminal">output/</em>. This script will run two main job scripts in sequence. Before doing so, it will either link or copy the required files (executable, namelist template, static files, and others) to <em class="terminal">${RUN_DIR}</em>.
+After obtaining the external model data to drive MPAS-A, you can use <em class="terminal">driver_initial_ens.tcsh</em> to create the initial/lateral boundary conditions and advance the forecasts. This script will create initial condition files at <em class="terminal">${INIT_DIR}/</em> and restart files at <em class="terminal">${OUTPUT_DIR}/</em>. This script will run three main job scripts in sequence in the case of regional MPAS-DART as we have seen the flowchart earlier. Before doing so, it will either link or copy the required files (executable, namelist template, static files, and others) to <em class="terminal">${RUN_DIR}</em>.
 
 <ol>
 <li><b>prep_initial_ens.tcsh</b>: create initial condition for MPAS-A from external data
 <ul>
-<li> if 'GFS' is employed, run 'init_atmosphere_model' to create IC and then run 'filter' to add perturbations
-<li> 'GFSENS (GEFS)' is employed, run 'init_atmosphere_model' for every member after that, they will be copied to  <em class="terminal">init/</em>
+<li> If 'GFSENS (GEFS)' is employed, run 'init_atmosphere_model' for every member after that, they will be copied to  <em class="terminal">${INIT_DIR}/</em>
 </ul>
-<li><b>mpas_first_advance.tcsh</b>: run MPAS-A to generate intial BKG ensemble forecasts by using IC files at init/; after completion, the files are stored at output/
+<li><b>prep_ens_lbc.tcsh</b>: create lateral boundary condition for MPAS-A from external data; after completion, the LBC files are stored at <em class="terminal">${INIT_DIR}/</em>
+<li><b>mpas_first_advance.tcsh</b>: run MPAS-A to generate intial BKG ensemble forecasts by using IC files at <em class="terminal">${INIT_DIR}/</em>; after completion, the files are stored at <em class="terminal">${OUTPUT_DIR}/</em>
 </ol>
 
 <p>
@@ -1270,15 +1284,15 @@ This  <em class="terminal">driver_initial_ens.tcsh</em> script requires 3 argume
 </ul>
 
 <p>
-To create 336-hour forecasts from 00 UTC on Apr 17, 2019, run the following command: 
+To create 24-hour forecasts from 00 UTC on May 3, 2024, run the following command: 
 <pre class="terminal">
-./driver_initial_ens.tcsh 2019041700 336 params.tcsh
+./driver_initial_ens.tcsh 2024050300 24 params.tcsh
 </pre>
 
 <p>
-After the jobs are complete, you should see the following files in the <em class="terminal">init/</em> and <em class="terminal">output/</em> directories
+After the jobs are complete, you should see the following files in the <em class="terminal">${INIT_DIR}/</em> and <em class="terminal">${OUTPUT_DIR}/</em> directories
 <pre class="terminal">
-$ ls -1 init/2019041700/*/*.nc # initial condition at ${INIT_DIR}
+$ ls -1 init/2024050300/*/*.nc # initial condition at ${INIT_DIR}
 init/2019041700/member00/x1.10242.init.nc
 init/2019041700/member01/x1.10242.init.nc
 init/2019041700/member02/x1.10242.init.nc
@@ -1291,7 +1305,7 @@ init/2019041700/member08/x1.10242.init.nc
 init/2019041700/member09/x1.10242.init.nc
 init/2019041700/member10/x1.10242.init.nc
 
-$ ls -1 output/2019050100/*/restart*.nc     # if ${USE_RESTART} = true at 'params.tcsh'
+$ ls -1 output/2024050400/*/restart*.nc     # if ${USE_RESTART} = true at 'params.tcsh'
 output/2019050100/member01/restart.2019-05-01_00.00.00.nc
 output/2019050100/member02/restart.2019-05-01_00.00.00.nc
 output/2019050100/member03/restart.2019-05-01_00.00.00.nc
