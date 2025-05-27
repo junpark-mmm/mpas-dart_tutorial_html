@@ -162,7 +162,8 @@ the repository directly on the command-line.
 <b>
 Normally the main DART repository should be used when starting a data assimilation project.
 However, there is updated code for Regional MPAS and Radar obs support which
-is not available yet in the main DART repository.This tutorial will guide you through downloading DART version 11.8.5 (released November 2024) from the main repository.
+is not available yet in the main DART repository. Please note that the branches at main DART is not working properly in the case of this regional tutorial because of some updates in the code (e.g., OBS Preprocessor parameters, 'w' is not correctly handled in model_mod, 'update_bc' has a fixed set of LBC variables, .....). For now, you can temporarily clone the code from the below github repository. This repository is based on the main DART branch cloned around May 6 2025 (tag: v11.11.0).
+
 </b>
 </p>
 
@@ -171,7 +172,7 @@ From within your <em class="terminal">${HOME}</em> directory run:
 </p>
 
 <pre class="terminal">
-$ git clone -b v11.8.5 https://github.com/NCAR/DART.git  DART
+$ git clone https://github.com/junpark-mmm/DART_Regional.git DART
 </pre>
 
 <p>
@@ -181,13 +182,13 @@ the output to the terminal should look something like the following:
 
 <pre class="terminal">
 Cloning into 'DART'...
-remote: Enumerating objects: 113034, done.
-remote: Counting objects: 100% (2331/2331), done.
-remote: Compressing objects: 100% (920/920), done.
-remote: Total 113034 (delta 1787), reused 1472 (delta 1387), pack-reused 110703 (from 3)
-Receiving objects: 100% (113034/113034), 672.86 MiB | 28.66 MiB/s, done.
-Resolving deltas: 100% (82659/82659), done.
-Note: switching to '2d5882c3084dcdfd2f57a01b505c7fe039689cba'.
+remote: Enumerating objects: 100240, done.
+remote: Counting objects: 100% (90/90), done.
+remote: Compressing objects: 100% (64/64), done.
+remote: Total 100240 (delta 50), reused 29 (delta 26), pack-reused 100150 (from 2)
+Receiving objects: 100% (100240/100240), 549.23 MiB | 51.97 MiB/s, done.
+Resolving deltas: 100% (74469/74469), done.
+Updating files: 100% (3458/3458), done.
 </pre>
 
 <p>
@@ -196,27 +197,26 @@ We should now have an <em class="terminal">DART</em> directory:
 
 <pre class="terminal">
 $ ls -l DART
-total 137
-drwxr-xr-x  6 junpark ncar  4096 Jan 10 10:50 assimilation_code
-drwxr-xr-x  2 junpark ncar  4096 Jan 10 10:50 build_templates
--rw-r--r--  1 junpark ncar 74556 Jan 10 10:50 CHANGELOG.rst
--rw-r--r--  1 junpark ncar   321 Jan 10 10:50 CITATION.cff
--rw-r--r--  1 junpark ncar  3220 Jan 10 10:50 conf.py
--rw-r--r--  1 junpark ncar   613 Jan 10 10:50 copyright.rst
-drwxr-xr-x 19 junpark ncar  4096 Jan 10 10:50 developer_tests
-drwxr-xr-x  3 junpark ncar  4096 Jan 10 10:50 diagnostics
-drwxr-xr-x  8 junpark ncar  4096 Jan 10 10:50 guide
--rw-r--r--  1 junpark ncar 25673 Jan 10 10:50 index.rst
--rw-r--r--  1 junpark ncar 11377 Jan 10 10:50 LICENSE
-drwxr-xr-x 53 junpark ncar  4096 Jan 10 10:50 models
-drwxr-xr-x  4 junpark ncar  4096 Jan 10 10:50 observations
--rw-r--r--  1 junpark ncar  2060 Jan 10 10:50 README.md
-drwxr-xr-x  2 junpark ncar  4096 Jan 10 10:50 theory
+total 168
+drwxr-xr-x  6 junpark ncar  4096 May 19 10:39 assimilation_code
+drwxr-xr-x  2 junpark ncar  4096 May 19 10:39 build_templates
+-rw-r--r--  1 junpark ncar 78321 May 19 10:39 CHANGELOG.rst
+-rw-r--r--  1 junpark ncar   321 May 19 10:39 CITATION.cff
+-rw-r--r--  1 junpark ncar  3415 May 19 10:39 conf.py
+-rw-r--r--  1 junpark ncar   613 May 19 10:39 copyright.rst
+drwxr-xr-x 22 junpark ncar  4096 May 19 10:39 developer_tests
+drwxr-xr-x  3 junpark ncar  4096 May 19 10:39 diagnostics
+drwxr-xr-x  8 junpark ncar  4096 May 19 10:39 guide
+-rw-r--r--  1 junpark ncar 25731 May 19 10:39 index.rst
+-rw-r--r--  1 junpark ncar 11377 May 19 10:39 LICENSE
+drwxr-xr-x 54 junpark ncar  4096 May 19 10:40 models
+drwxr-xr-x  4 junpark ncar  4096 May 19 10:40 observations
+-rw-r--r--  1 junpark ncar  2060 May 19 10:39 README.md
+drwxr-xr-x  2 junpark ncar  4096 May 19 10:40 theory
 </pre>
 
 <p>
-That's it! We now have a copy of the v11.8.5 release of the DART source code.
-The future DART can also be supported unless there are significant updates.
+That's it! We now have a copy of the v11.11.0 release of the DART source code.
 </p>
 
 </div>
@@ -1118,42 +1118,48 @@ an MPAS/DART cycling experiment.
 
 <div id="prep_exp" class="subsection">
 <p>
-This regional MPAS-DART tutorial was tested with a ~60 km regional domain (nCells=9,339) using MPAS-A v8.2.0 and DART v11.8.5. The tutorial uses 1-day forecasts with 10 ensemble members for the first cycle, initialized at 00 UTC on May 03, 2024. It also includes observation sequence files for 3 days to enable users to try cycling experiments.
+This regional MPAS-DART tutorial was tested with a ~60 km regional domain (nCells=9,339) using MPAS-A v8.2.0 and the updated DART for regional MPAS. The tutorial uses 1-day forecasts with 10 ensemble members for the first cycle, initialized at 00 UTC on May 03, 2024. For the tutorial, we have included observation sequence files for 3 days to enable users to try cycling experiments.
 
 <p>
 To clone the tutorial scripts for regional MPAS-DART from <a href="https://github.com/junpark-mmm/mpas-dart_tutorial_scripts" target="_blank">github.com/junpark-mmm/mpas-dart_tutorial_scripts</a>, use the following command:
 <p>
 
 <pre class="terminal">
-   git clone -b Regional_2025 https://github.com/junpark-mmm/mpas-dart_tutorial_srcripts.git
+   git clone -b regional https://github.com/junpark-mmm/mpas-dart_tutorial_srcripts.git
 </pre>
 
 <p>
 Although the scripts for regional MPAS-DART are separated at this time, the scripts will be merged in a unified branch to support both global and regional MPAS-DART applications.
-In addition, these scripts will be merged into the official DART repository in the future. After the merge, you can obtain and run them directly from the <em class="terminal">DART/models/mpas_atm/shell_scripts</em> directory.
+In addition, these scripts will be merged into the official DART repository in the future. After the merge, you will be able to obtain and run them directly from the <em class="terminal">DART/models/mpas_atm/shell_scripts</em> directory.
 <p>
 
 <p>
-Additionally, you need to download the tutorial test data. This data is available as a .tgz file (approximately 2.2 GB) from the following link: <a href="https://drive.google.com/file/d/175dxvoQki3CN8-fnayQV_EBYb3mvQTxj/view?usp=sharing" target="_blank">google_drive_link_for_now</a>.
+Additionally, you need to download the tutorial test data. This data is available as a .tgz file (approximately 160 MB) from the following link: <a href="https://drive.google.com/file/d/1q5XABN7FcNVzXvGX04zY58pw-0Vt2Hl4" target="_blank">google_drive_link_for_now</a>.
 <p>
 This includes:
 <ul>
-<li>initial condition files
-<li>10-member intial background MPAS-A forecast ensemble
 <li>observation sequence files for 3 days
 <li>template and static data
 </ul>
+
+<p>
+Unlike global tutorial data, this does not include MPAS-A IC/LBC data at all. This is mainly because of dependencies on the external data in the case of regional MPAS-A for LBC (external data takes more space than ~60km regional MPAS-A).
+<p>
 
 <p>
 After placing the .tgz file in the tutorial script directory, you should see the following files. The figure below illustrates the role of each script and provides a brief flowchart for the tutorial.
 <img src="TUTORIAL_FLOWCHART.png">
 
 <p>
+You may see some scripts in blue outline which have updated for regional MPAS-A applications. This is different from the one in the global tutorial and they include steps for LBC generation, updating LBC with analysis state.
+
+<p>
 First, you need to modify <em class="terminal">params.tcsh</em> to prepare tutorial experiments. Please modify the following variables based on your working environment.
 
 <p>
 You may search word <b>'Change'</b> in the script and modify them according to your own environment.
-In the case of regional MPAS-DART, you may also consider two-three variables below w.c.t the Global MPAS-DART
+In the case of regional MPAS-DART, you may also consider two-three variables below w.c.t the Global MPAS-DART.
+For example, you should set <em class="terminal">USE_REGIONAL</em> and <em class="terminal">LBC_VARS</em> for regional DA.
 The other parameters are currently tuned for running the tutorial case and you may make changess to suit your needs.
 
 <pre class="terminal">
@@ -1183,7 +1189,7 @@ $ vi params.tcsh
 </pre>
 
 <p>
-You need to set the  <em class="terminal">$WPS_DIR</em> environment variable in the case of regional MPAS-DART since it needs to create LBCs from an external dataset. This is because  <em class="terminal">ungrib.exe</em> generates intermediate files that are necessary for creating the initial conditions for MPAS-A.
+You also need to set the  <em class="terminal">$WPS_DIR</em> environment variable in the case of regional MPAS-DART since it needs to create LBCs from an external dataset. This is because  <em class="terminal">ungrib.exe</em> generates intermediate files that are necessary for creating the initial conditions for MPAS-A.
 
 <p>
 Then, run  <em class="terminal">setup.csh</em>. This will create an experimental directory for the tutorial cases at  <em class="terminal">$BASE_DIR</em>.
@@ -1236,7 +1242,7 @@ It requires 3 arguments:
 </ul>
 
 <p> 
-To download GEFS analysis time data from 00 UTC on May 03, 2019 for 4 days, use the below command: 
+To download GEFS analysis time data from 00 UTC on May 03, 2024 for 4 days, use the below command: 
 <pre class="terminal">
 ./download.tcsh 2024050300 2024050700 params.tcsh
 </pre>
@@ -1293,30 +1299,43 @@ To create 24-hour forecasts from 00 UTC on May 3, 2024, run the following comman
 After the jobs are complete, you should see the following files in the <em class="terminal">${INIT_DIR}/</em> and <em class="terminal">${OUTPUT_DIR}/</em> directories
 <pre class="terminal">
 $ ls -1 init/2024050300/*/*.nc # initial condition at ${INIT_DIR}
-init/2019041700/member00/x1.10242.init.nc
-init/2019041700/member01/x1.10242.init.nc
-init/2019041700/member02/x1.10242.init.nc
-init/2019041700/member03/x1.10242.init.nc
-init/2019041700/member04/x1.10242.init.nc
-init/2019041700/member05/x1.10242.init.nc
-init/2019041700/member06/x1.10242.init.nc
-init/2019041700/member07/x1.10242.init.nc
-init/2019041700/member08/x1.10242.init.nc
-init/2019041700/member09/x1.10242.init.nc
-init/2019041700/member10/x1.10242.init.nc
-
+init/2024050300/member01/conus.init.nc
+init/2024050300/member01/lbc.2024-05-03_00.00.00.nc
+init/2024050300/member01/lbc.2024-05-03_06.00.00.nc
+init/2024050300/member01/lbc.2024-05-03_12.00.00.nc
+init/2024050300/member01/lbc.2024-05-03_18.00.00.nc
+init/2024050300/member01/lbc.2024-05-04_00.00.00.nc
+init/2024050300/member02/conus.init.nc
+init/2024050300/member02/lbc.2024-05-03_00.00.00.nc
+init/2024050300/member02/lbc.2024-05-03_06.00.00.nc
+.........
+.........
+.........
 $ ls -1 output/2024050400/*/restart*.nc     # if ${USE_RESTART} = true at 'params.tcsh'
-output/2019050100/member01/restart.2019-05-01_00.00.00.nc
-output/2019050100/member02/restart.2019-05-01_00.00.00.nc
-output/2019050100/member03/restart.2019-05-01_00.00.00.nc
-output/2019050100/member04/restart.2019-05-01_00.00.00.nc
-output/2019050100/member05/restart.2019-05-01_00.00.00.nc
-output/2019050100/member06/restart.2019-05-01_00.00.00.nc
-output/2019050100/member07/restart.2019-05-01_00.00.00.nc
-output/2019050100/member08/restart.2019-05-01_00.00.00.nc
-output/2019050100/member09/restart.2019-05-01_00.00.00.nc
-output/2019050100/member10/restart.2019-05-01_00.00.00.nc
-
+output/2024050400/member01/restart.2024-05-04_00.00.00.nc
+output/2024050400/member02/restart.2024-05-04_00.00.00.nc
+output/2024050400/member03/restart.2024-05-04_00.00.00.nc
+output/2024050400/member04/restart.2024-05-04_00.00.00.nc
+output/2024050400/member05/restart.2024-05-04_00.00.00.nc
+output/2024050400/member06/restart.2024-05-04_00.00.00.nc
+output/2024050400/member07/restart.2024-05-04_00.00.00.nc
+output/2024050400/member08/restart.2024-05-04_00.00.00.nc
+output/2024050400/member09/restart.2024-05-04_00.00.00.nc
+output/2024050400/member10/restart.2024-05-04_00.00.00.nc
+.........
+.........
+.........
+$ ls -1 output/2024050400/*/mpasout*.nc     # if ${USE_RESTART} = false at 'params.tcsh'
+output/2024050400/member01/mpasout.2024-05-04_00.00.00.nc
+output/2024050400/member02/mpasout.2024-05-04_00.00.00.nc
+output/2024050400/member03/mpasout.2024-05-04_00.00.00.nc
+output/2024050400/member04/mpasout.2024-05-04_00.00.00.nc
+output/2024050400/member05/mpasout.2024-05-04_00.00.00.nc
+output/2024050400/member06/mpasout.2024-05-04_00.00.00.nc
+output/2024050400/member07/mpasout.2024-05-04_00.00.00.nc
+output/2024050400/member08/mpasout.2024-05-04_00.00.00.nc
+output/2024050400/member09/mpasout.2024-05-04_00.00.00.nc
+output/2024050400/member10/mpasout.2024-05-04_00.00.00.nc
 </pre>
 
 <p>
@@ -1325,7 +1344,7 @@ If you are interested, you may see below subsections.
 
 <!-- ============================================================================== --->
 <div class="subheader" onClick="show('initial-ens_supplementary1')">
-<h3>4.2.1 Details for Creating Initial Conditions</h3>
+<h3>4.2.1 Details for Creating Initial/Lateral Boundary Conditions</h3>
 </div>
 
 <div id="initial-ens_supplementary1" class="subsection">
@@ -1337,6 +1356,7 @@ If you have access to an ensemble of grib files(e.g., GEFS), then in the
 <pre class="terminal">
 driver_initial_ens.tcsh
 prep_initial_ens_ic.tcsh
+prep_ens_lbc.tcsh
 </pre>
 </p>
 
@@ -1346,14 +1366,7 @@ of initial ensemble MPAS files.
 </p>
 
 <p>
-If you do not have an ensemble of grib files but do have a single
-global analysis file, you can create an ensemble with features built 
-into the filter program itself. The idea is to add tiny perturbations 
-to the analysis, letting them grow with cycles or over forecast times.
-</p>
-
-<p>
-In both cases, you need to have two more executables:
+Thus, you need to have two more executables:
 <pre class="terminal">
 WPS/ungrib.exe
 MPAS/init_atmosphere
@@ -1375,9 +1388,6 @@ For example, Let us start with a GFS analysis. You can download GFS analysis fro
 <a href="https://rda.ucar.edu/datasets/ds084.1/">
 https://rda.ucar.edu/datasets/ds084.1/</a>
 
-The below is the procedure to add perturbations to the initial condition file generated by GFS analysis.
-These procedures are included in <em class="terminal">$BASE_DIR/scripts/prep_initial_ens_ic.tcsh</em>.
-
 <ol>
 <li>Run WPS/ungrib.exe over the GFS file in grib format.
    <ul>
@@ -1394,73 +1404,12 @@ These procedures are included in <em class="terminal">$BASE_DIR/scripts/prep_ini
    </ul>
 </li>
 
-<li>Run DART/models/mpas_atm/work/filter with input.nml edited as below.
-
-   <pre class="terminal">
-   &filter_nml
-   perturb_from_single_instance = .true.
-   input_state_file_list    = 'filter_in.txt'
-   output_state_file_list   = 'filter_out.txt'
-   obs_sequence_in_name     = 'obs_seq1.out'
-   
-   &model_nml
-   model_perturbation_amplitude = 0.0001   # set a small but non-zero value
-    
-   </pre>
-
-   Notes:
-   <ol>
-   <li> filter_in.txt has a single line as member1/init.nc 
-   (which is copied from init.nc in step 2).
-
-   <li> filter_out.txt looks like
-   <pre class="terminal">
-   member1/analysis.nc
-   member2/analysis.nc
-   ... (as many members as ens_size; one per line for each member)
-   </pre>
-
-   <li> DART/models/mpas_atm/data/obs_seq1.out can be used, but the observation time 
-   at the second last line (e.g., 0   151945) should be first matched with
-   the model time in the mpas file in 'filter_in.txt'.
-   <br><br>
-   To find the corresponding gregorian time for the obs_seq file, use 'advance_time' as below.
-   <pre class="terminal">
-   ncdump -v xtime member1/init.nc | tail -2 | head -1 | cut -d ";" -f1 | sed -e 's/"//g'  
-   # => 2024-06-13_12:00:00
-   echo 2024-06-13_12:00:00 0 -g | ./advance_time  # =>    154661   43200
-   </pre>
-
-   Replace the second last line in obs_seq1.out with the new time (e.g., 43200   154661).
-   (Caution: The obs_seq file has seconds and days, not days and seconds.)
-
-   <li> Leave the rest of the parameters in input.nml as they are, and run filter,
-   which will perturb your single mpas file in filter_in.txt for
-   all the states listed as mpas_state_variables in &mpas_vars_nml in your input.nml,
-   then write out N ensemble members as listed in filter_out.txt.
-   </ol>
-</li>
-
-<li>Run DART/models/mpas_atm/work/update_mpas_states with an updated filter_in.txt.
+<li>Run MPAS/init_atmosphere (with config_init_case = 9) to create lbc.nc
    <ul>
-   <li>First, copy init.nc from step 2 to each member directory.
-   <li>Then edit filter_in.txt with all the members listed as below.
-   <pre class="terminal">
-   member1/init.nc
-   member2/init.nc
-   ...
-   </pre>
-   <li> These init.nc files are now updated with perturbed states in analysis.nc for each member.
+   <li> grid.nc, graph.info
+   <li> static.nc
+   <li> lbc.nc
    </ul>
-</li>
-
-<li>Run MPAS/atmosphere_model up to the initial cycle time in each member directory.
-   You might want to recenter the ensemble mean at the initial cycle before you get the cycling started.
-   Alternatively, you can skip this step and use initial ensemble (with tiny perturbations) generated
-   in step 4. In that case, you need to run many cycles until your ensemble spread gets saturated,
-   which might be costy. 
-   In the mesoscale applications, it is recommended to use the GFS analysis at least 7 days earlier than
-   the initial cycle time so that ensemble forecasts are run for 7 days (letting tiny perturbations grow).
 </li>
 
 </ol>
@@ -1505,6 +1454,8 @@ In this tutorial, we will perform the following preprocessing steps:
 <li> Perform superobbing on aircraft observations using the ~240 km model grid information
 <li> Adjust the quality control (QC) flags for NCEP surface and satellite wind observation types
 <li> Reject some surface observations by checking the elevation difference between the observation and the model background
+<li> Inflate observation errors near boundary area
+<li> Reject observations near boundary area
 </ul>
 
 <p>
@@ -1518,20 +1469,23 @@ This <em class="terminal">run_obs_preprocess.tcsh</em> requires 4 arguments:
 </ul>
 
 <p>
-For example, to create the obs_seq files from May 1, 2019 to May 7, 2019, run the following command:
+For example, to create the obs_seq files from May 4, 2024 to May 7, 2024, run the following command:
 <pre class="terminal">
-./run_obs_preprocess.tcsh 2019050100 2019050700 6 params.tcsh
+./run_obs_preprocess.tcsh 2024050400 2024050700 6 params.tcsh
 </pre>
 
 <p>
 You should find the processed observation sequence files (with the <b>_after</b> postfix) in the <em class="terminal">${OBS_DIR} </em> directory. These files will be smaller than the original files.
 
 <pre class="terminal">
-$ ls obs/obs_seq201905011* -lh
--rw-r--r-- 1 junpark ncar 143M Jan 10 16:54 obs/obs_seq2019050112
--rw-r--r-- 1 junpark ncar  79M Jan 10 17:14 obs/obs_seq2019050112_after
--rw-r--r-- 1 junpark ncar 114M Jan 10 16:54 obs/obs_seq2019050118
--rw-r--r-- 1 junpark ncar  53M Jan 10 17:15 obs/obs_seq2019050118_after
+$ ls obs/obs_seq20240504* -1
+obs/obs_seq2024050400_after
+obs/obs_seq2024050406
+obs/obs_seq2024050406_after
+obs/obs_seq2024050412
+obs/obs_seq2024050412_after
+obs/obs_seq2024050418
+obs/obs_seq2024050418_after
 </pre>
 
 <p>
@@ -1562,8 +1516,13 @@ This program allows users to do the following functions:
 <li>The highest qc and obs error available in each voxel are assigned to
     the superobed observation.
 <li>Merge acars and aircraft observations into acars.
+<li>Inflate observation errors near boundary cells (obsdistbdy, increase_bdy_error, maxobsfac)
+<li>Remove observations near boundary cells (obs_boundary, unit: meter)
 </ul>
 </p>
+
+If you want to try to adjust some of those parameters at tutorial, please update your <em class="terminal">${SCRIPTS_DIR}/run_obs_preprocess.tcsh </em> at lines #188-199.
+
 
 <p>
 Example namelist:
@@ -1591,7 +1550,7 @@ Example namelist:
   obs_boundary             = 0.0
   increase_bdy_error       = .false.
   maxobsfac                = 2.5
-  obsdistbdy               = 15.0
+  obsdistbdy               = 15000.0
 
   sfc_elevation_check      = .false.
   sfc_elevation_tol        = 300.0
@@ -1668,6 +1627,7 @@ To perform the DART analysis and advance the MPAS-A forecasts through multiple c
 This script utilizes two main job scripts in sequence:
 <ol>
 <li> <b>assimilate.tcsh</b>: run EAKF analysis using <em class="terminal">filter</em> and update background files with DART analysis using <em class="terminal">update_mpas_state</em>
+<li><b>prep_ens_lbc.tcsh</b>: create lateral boundary condition for MPAS-A from external data; after completion, the LBC files are stored at <em class="terminal">${INIT_DIR}/</em>
 <li> <b>mpas_advance.tcsh</b>: run <em class="terminal">atmosphere_model</em> to advance the model state to thenext cycle
 </ol>
 
@@ -1681,36 +1641,39 @@ This <em class="terminal">driver_dart_advance.tcsh</em> requires 4 arguments:
 </ul>
      
 <p>
-To run DA cycles every 6 hour from 00 UTC on May 1, 2019 to 00 UTC on May 2 using DART and MPAS-A, run the following command:
+To run DA cycles every 6 hour from 00 UTC on May 3, 2024 to 00 UTC on May 4 using DART and MPAS-A, run the following command:
 <pre class="terminal">
-./driver_dart_advance.csh 2019050100 2019050200 6 params.tcsh
+./driver_dart_advance.csh 2024050300 2024050400 6 params.tcsh
 </pre>
 
 <p>
 After successful executions, you may see those files at <em class="terminal">${OUTPUT_DIR}</em>
 
 <pre class="terminal">
-$ ls -1 output/2019050100/member0[1,2]/*.nc
-output/2019050100/member01/restart.2019-05-01_00.00.00.nc   # BKG 01
-output/2019050100/member01/analysis.2019-05-01_00.00.00.nc  # DART ANL 01
-output/2019050100/member01/afterda.2019-05-01_00.00.00.nc   # ANL 01
-output/2019050100/member02/restart.2019-05-01_00.00.00.nc   
-output/2019050100/member02/analysis.2019-05-01_00.00.00.nc
-output/2019050100/member02/afterda.2019-05-01_00.00.00.nc
+$ ls -1 output/2024050400/member0[1,2]/*.nc # if ${USE_RESTART} = true at 'params.tcsh'
+output/2024050400/member01/restart.2024-05-04_00.00.00.nc   # BKG 01
+output/2024050400/member01/analysis.2024-05-04_00.00.00.nc  # DART ANL 01
+output/2024050400/member01/afterda.2024-05-04_00.00.00.nc   # ANL 01
+output/2024050400/member02/restart.2024-05-04_00.00.00.nc   
+output/2024050400/member02/analysis.2024-05-04_00.00.00.nc
+output/2024050400/member02/afterda.2024-05-04_00.00.00.nc
 
-$ ls -1 output/2019050100
-output/2019050100/input.nml.filter   # filter namelist
-output/2019050100/obs_seq.final      # obs sequence file after DART analysis
-output/2019050100/output_priorinf_mean.nc  # inflation file used for next cycles
-output/2019050100/output_priorinf_sd.nc     
-output/2019050100/member*/
+$ ls -1 output/2024050400
+output/2024050400/input.nml.filter   # filter namelist
+output/2024050400/obs_seq.final      # obs sequence file after DART analysis
+output/2024050400/output_priorinf_mean.nc  # inflation file used for next cycles
+output/2024050400/output_priorinf_sd.nc     
+output/2024050400/member*/
 ......
 
-# ls -1 output/lgos/2019050100
+$ ls -1 output/logs/2024050100
 dart_log.nml.filter
 dart_log.out.filter
-filter.2019050100.log
-mpas_advance.e01.log
+filter.2024050100.log  # filter logfile
+init_lbc_mpas_01.log   # logfile for LBC
+init_lbc_mpas_02.log 
+   ...........
+mpas_advance.e01.log   # logfile for MPAS-A FCST
 mpas_advance.e02.log
 .........
 </pre>
@@ -1866,11 +1829,57 @@ each member (with the file list containing the particular member only) depending
 
 </div>
 
+<!-- ============================================================================== --->
+<div class="subheader" onClick="show('updatebc-run')">
+<h3>4.4.4 Running update_bc for Regional Models</h3>
+</div>
+
+<div id="updatebc-run" class="subsection">
+
+<p>
+The program <em class="terminal">update_bc</em> needs to be called if running a regional case.
+</p>
+  
+<p>
+In regional cycling, <em class="terminal">update_bc</em> should be called to
+update the lateral boundary condition (lbc) file at the analysis time for each
+ensemble member right after <em class="terminal">update_mpas_states</em> and
+before running the regional model.
+</p>
+
+<p>
+This is realized in the <em class="terminal">mpas_advance.tcsh</em> before advancing the MPAS-A forecast when <em class="terminal">USE_REGIONAL</em> is set as  <b>true</b>. Users may edit the list of LBC variables (<em class="terminal">mpas_lbc_variables</em>)depending on their configurations and external data.
+</p>
+
+<p>
+The namelist associated with <em class="terminal">update_bc</em> is:
+
+<pre class="terminal">
+&amp;update_bc_nml
+  update_analysis_file_list = 'filter_out.txt'      # path for analysis file
+  update_boundary_file_list = 'boundary_inout.txt'  # path for lbc file
+  debug                     = .false. 
+  mpas_lbc_variables = 'lbc_qv', 'lbc_theta', 'lbc_rho', 'lbc_u' # list of LBC variable to update
+  /
+</pre>
+</p>
+
+<p>
+The input of <em class="terminal">update_bc</em> ('filter_out.txt') should be the same
+as the one for update_input_file_list in &amp;update_mpas_states_nml.
+'boundary_inout.txt' contains the lbc file at the analysis time.
+Since <em class="terminal">update_bc</em> is a serial program (like <em class="terminal">update_mpas_states</em>),
+it is recommended to run it for each ensemble member (meaning that a single lbc file
+for the member is listed in 'boundary_inout.txt').
+
+</div>
+
+
 
 
 <!-- ============================================================================== --->
 <div class="subheader" onClick="show('advance-run')">
-<h3>4.4.4 Advancing the ensemble of MPAS Models</h3>
+<h3>4.4.5 Advancing the ensemble of MPAS Models</h3>
 </div>
 
 <div id="advance-run" class="subsection">
@@ -1898,8 +1907,8 @@ after the analysis step is done at each cycle.  It performs the following:
 <p>
 Notes:
 <ol>
-<li>This script is tested with the MPAS v8.2.0 public release and the DART v11.8.5 public release. It may <b>NOT</b> be backward compatible with older versions.
-<li>Support for Regional MPAS will also be added soon.
+<li>This script is tested with the MPAS v8.2.0 public release and the enhanced DART v11.11.0 public release. It may <b>NOT</b> be backward compatible with older versions.
+<li>Support for Regional MPAS-A
 <li>MPAS is run in a restart mode (<em class="terminal">USE_RESTART = true </em> in default) during the cycles , which means both input and output of the model run are restart files. Users might consider using 'da_state' streams.
 <li>The input analysis file should be provided through <em class="terminal">update_mpas_states</em> 
           (which is supposed to be run before running this script).
@@ -1959,51 +1968,65 @@ This <em class="terminal">run_obs_diag.tcsh</em> requires 4 arguments:
 </ol>
 
 <p>
-To create netCDF OBS diagnostics files from May 1, 2019 to May 2, 2019, use the following command:
+To create netCDF OBS diagnostics files from May 3, 2024 to May 4, 2024, use the following command:
 <pre class="terminal">
-./run_obs_diag.tcsh 2019050100 2019050200 6 params.tcsh
+./run_obs_diag.tcsh 2024050300 2024050400 6 params.tcsh
 </pre>
 
 <p>
 You may see netCDF files (e.g., <em class="terminal">${OUTPUT_DIR}/${DATE}/obs_diag_${DATE}.nc</em>). This can be utilized for analysis.
 <pre class="terminal">
-$ ls output/201905*/obs_diag*.nc
-output/2019050100/obs_diag_2019050100.nc  output/2019050118/obs_diag_2019050118.nc
-output/2019050106/obs_diag_2019050106.nc  output/2019050200/obs_diag_2019050200.nc
-output/2019050112/obs_diag_2019050112.nc  
+$ ls output/202405*/obs_diag*.nc
+output/2024050300/obs_diag_2024050300.nc  output/2024050318/obs_diag_2019050318.nc
+output/2024050306/obs_diag_2024050306.nc  output/2024050400/obs_diag_2019050400.nc
+output/2024050312/obs_diag_2024050312.nc  
 </pre>
 
 <p>
-For example, the below command can show the observation-space diagnostics on SFC_LAND_ALTIMETER (pressure) at 00 UTC on May 2, 2019 (5th cycle):
+For example, the below command can show the observation-space diagnostics on METAR_ALTIMETER (pressure) at 00 UTC on May 4, 2024 (5th cycle):
 
 <pre class="terminal">
-$ ncdump -v LAND_SFC_ALTIMETER_analy,LAND_SFC_ALTIMETER_guess output/2019050200/obs_diag_2019050200.nc
-netcdf obs_diag_2019050200 {
+$ ncdump -v METAR_ALTIMETER_analy,METAR_ALTIMETER_guess output/2024050400/obs_diag_2024050400.nc
+netcdf obs_diag_2024050400 {
 dimensions:
 	time = UNLIMITED ; // (1 currently)
 	bounds = 2 ;
 	copy = 23 ;
-	obstypes = 118 ;
-	region = 5 ; # GLOBAL, NH, SH, TR, and COUS
-         .........
+	obstypes = 345 ;
+	region = 1 ;
+        ..........
 variables:
          .........
-	float LAND_SFC_ALTIMETER_guess(time, copy, surface, region) ;
-	float LAND_SFC_ALTIMETER_analy(time, copy, surface, region) ;
+	 float METAR_ALTIMETER_guess(time, copy, surface, region) ;
+	 float METAR_ALTIMETER_analy(time, copy, surface, region) ;
          .........
 data:
 
- LAND_SFC_ALTIMETER_guess =
-     .............
-  2.588519, 2.587369, 3.548663, 1.57491, 1.987852, # RMSI BKG (GLOBAL, NH, SH,TR, and CONUS)
-  -0.0414397, 0.2682366, -0.9845654, -0.5949118, -0.5269321, # BIAS BKG
-     .............
+ METAR_ALTIMETER_guess =
+  1527,
+  1525,
+  ....
+  0.9718627,     # RMSI
+  0.2645375,     # BIAS
+  0.5145382,     # SPREAD
+  1.324435,      # TOTAL SPREAD
+  ....
+  0,
+  2,
+  0 ;
 
- LAND_SFC_ALTIMETER_analy =
-     .............
-  1.197396, 1.162324, 1.294496, 1.26149, 1.205597, # RMSI ANL
-  -0.1500837, -0.06816623, -0.290615, -0.3772454, -0.3234949, # RMSI ANL
-     .............
+ METAR_ALTIMETER_analy =
+  1527,
+  1525,
+  ....
+  0.6737227,
+  0.07258836,
+  0.1168877,
+  1.225986,
+  ....
+  0,
+  2,
+  0 ;
 }
 </pre>
 
@@ -2073,97 +2096,35 @@ https://docs.dart.ucar.edu/en/latest/guide/compiling-dart.html</a>
 <div id="initial-reg" class="subsection">
 
 <p>
-To create a regional MPAS ensemble, the global ensemble produced above should be cut out for 
-the region of interest. To produce a regional file from a global MPAS file (for each member), 
-use creat_region in 
+To run a regional MPAS ensemble DA experiment, the static file for regional domain need to be generated. 
+This can be done with several ways now, but we are going to introduce two methods.
+</p>
+
+<p>
+The first method is slicing out from the global grid or static file by using <em class="terminal">create_region</em> to generate file for the region of interest. To produce a regional file from a global MPAS file (for each member), use <em class="terminal">creat_region</em> in 
 <a href="https://github.com/MPAS-Dev/MPAS-Limited-Area/">
 https://github.com/MPAS-Dev/MPAS-Limited-Area/ </a> . 
 Instructions can be found in Section 4.1 in the MPAS tutorial 
 <a href="https://www2.mmm.ucar.edu/projects/mpas/tutorial/v8.0/index.html">
 https://www2.mmm.ucar.edu/projects/mpas/tutorial/v8.0/index.html</a> .
+<p>
 
 <p>
-<b> We will update this tutorial page after the regional DA capabilities are fully merged into the official DART repository. </b>
-</p>
-
-</div>
-
-<!-- ============================================================================== --->
-<div class="subheader" onClick="show('updatebc-run')">
-<h3>6.3. Running update_bc for Regional Models</h3>
-</div>
-
-<div id="updatebc-run" class="subsection">
-
+The other option is utilzing <em class="terminal">project_hexes</em> to generate a grid file for the region of interest. This is avialable at <a href="https://github.com/MPAS-Dev/MPAS-Tools"> https://github.com/MPAS-Dev/MPAS-Tools </a>. 
+For more information, please check the README and files at <a href="https://github.com/MPAS-Dev/MPAS-Tools/tree/master/mesh_tools/hex_projection">
+https://github.com/MPAS-Dev/MPAS-Tools/tree/master/mesh_tools/hex_projection</a> .
 <p>
-This program needs to be called if running a regional case. This may be not work with the current public DART release.
-</p>
-
-<p>
-In regional cycling <em class="terminal">update_bc</em> should be called to 
-update the lateral boundary condition (lbc) file at the analysis time for each 
-ensemble member right after <em class="terminal">update_mpas_states</em> and 
-before running the regional model (through <em class="terminal">advance_model.csh</em>).
-</p>
-
-<p>
-The namelist associated with <em class="terminal">update_bc</em> is:
-
-<pre>
-&amp;update_bc_nml
-  update_analysis_file_list = 'filter_out.txt'
-  update_boundary_file_list = 'boundary_inout.txt'
-  debug                     = .false.
-  /
-</pre>
-</p>
-
-<p>
-The input of <em class="terminal">update_bc</em> ('filter_out.txt') should be the same 
-as the one for update_input_file_list in &amp;update_mpas_states_nml. 
-'boundary_inout.txt' contains the lbc file at the analysis time. 
-Since <em class="terminal">update_bc</em> is a serial program (like <em class="terminal">update_mpas_states</em>), 
-it is recommended to run it for each ensemble member (meaning that a single lbc file 
-for the member is listed in 'boundary_inout.txt'). 
 
 </div>
-
-<!-- ============================================================================== --->
-<div class="subheader" onClick="show('global_vr_mesh')">
-<h3>6.4 Running glbal MPAS-DART with the variable resolution mesh</h3>
-</div>
-
-<div id="global_vr_mesh" class="subsection">
- <p>
- This tutorial material was successfully tested with variable resolution global mesh (e.g., 240-48km, 120-30km, ....).
- If you have enough resources to run these variable resolution mesh, you may try to run by referencing below steps
- <p>
- <ol>
- <li> place your variable resolution 'static' mesh file onto </em class="terminal">${BASE_DIR}/template</em>. 
-  You can obtain the files at <a href="https://mpas-dev.github.io/atmosphere/atmosphere_meshes.html">
- https://mpas-dev.github.io/atmosphere/atmosphere_meshes.html</a>
- <li> change the below variables depending on your experimental setup (e.g., 240-48km)
- <pre class="terminal">
-  set    MPAS_GRID = x5.30210     # All grid parameters will be changed based on this.
-  set     DT_MPAS  = 120    	# timestep for MPAS
-        .....
-  set  USE_LEN_DISP = true       # true  :        add 'config_len_disp' at namelist.atmosphere
-  set  LEN_DISP = 48000         # Finest scale in mesh (unit: meter)
- </pre>
- <li> start to create initial background forecasts and then try cycled DA
- </ol>
-
-</div>
-
 
 <!-- ============================================================================== --->
 <div class="subheader" onClick="show('ubuntu_example')">
-<h3>6.5 Ubuntu Environment for MPAS-DART Tutorial  </h3>
+<h3>6.3 Ubuntu Environment for MPAS-DART Tutorial  </h3>
 </div>
 
 <div id="ubuntu_example" class="subsection">
  <p>
- This tutorial material was also tested with local laptop using Ubuntu 22.04.5 LTS. The Dell G5 5515 Laptop with Ryzen 5 5600H CPU (8C/12T) with 24 GB memory is utilized but at least ~16 GB memory is required in that MPAS-A (filter) requires ~ 8 (12) GB memory for the current tutorial material.
+ This regional tutorial material was also tested with local laptop using Ubuntu 22.04.5 LTS. The Dell G5 5515 Laptop with Ryzen 5 5600H CPU (8C/12T) with 24 GB memory is utilized but at least ~16 GB memory is required in that MPAS-A (filter) requires ~ 8 (12) GB memory for the current tutorial material.
  You may need to install those libaries if you have not prepared those libraries. In the test, the below libraries were compiled and employed (as of Jan 21, 2025)
  <p>
  <ol>
@@ -2190,7 +2151,7 @@ https://downloads.unidata.ucar.edu/netcdf/</a>
 
 <!-- ============================================================================== --->
 <div class="subheader" onClick="show('using_da_state')">
-<h3>6.6 Using 'da_state' stream, not 'restart' file </h3>
+<h3>6.4 Using 'da_state' stream, not 'restart' file </h3>
 </div>
 
 <div id="using_da_state" class="subsection">
@@ -2208,8 +2169,7 @@ https://downloads.unidata.ucar.edu/netcdf/</a>
  </pre>
 
  <p>
- To try this capability, you may need to use newer <em class="terminal">streams.atmosphere</em> template and need to change <em class="terminal">$USE_RESTART</em> as <b>false</b> at <em class="terminal">params.tcsh</em>.
- We will upload the tutorial data file for using 'da_state' in MPAS-DART soon. The tutorial file size will be reduced to 1.2GB from 2.1 GB for this case. 
+ To try this capability, you may need to use newer <em class="terminal">streams.atmosphere</em> template and need to change <em class="terminal">$USE_RESTART</em> as <b>false</b> at <em class="terminal">params.tcsh</em>. This is already included in the case of regional MPAS-DART tutorial templates (see <em class="terminal">${TEMPLATE_DIR}/streams.atmosphere.new</em>).
 
 </div>
 
